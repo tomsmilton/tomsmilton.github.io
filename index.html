@@ -1,9 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Hello Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <link rel="stylesheet" href="tufte-css/tufte.css">
+    <style>
+        .divider {
+            border-bottom: 1px solid #758781;
+            margin: 1rem 0;
+            width: 87.5%;
+        }
+
+        .post-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .post-title {
+            margin: 0.5rem 0;
+        }
+
+        .post-excerpt {
+            margin-top: 0.5rem;
+        }
+    </style>
 </head>
+
 <body>
-    helo
+    <article>
+
+        <section>
+            <h1 class="h1">Anecdotes and ideas</h1>
+            <p>This is a collection of potential blog posts. I typically have a few dozen ideas in progress - while I'd love to write about these topics myself, if you’d like to write on any of the topics, I’d be pleased for you to take these ideas (if you can call them that).</p>
+
+        </section>
+
+
+        <div class="divider"></div>
+
+        <section>
+
+            <h3>Woodlawn Wanderer 9</h3>
+            <p><label for="mn-figure-1" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-figure-1"
+                    class="margin-toggle" /><span class="marginnote"><img src="assets/images/WoodlawnWanderer9_hero.png"
+                        alt="The Woodlawn Wanderer 9" />The Woodlanawn Wandered 9 - a fully analogue, completely
+                    automated
+                    mammalian cell culture system.</span>In 1973 NASA launched Skylab 3 - a 59-day, manned, orbital
+                mission. Aboard this spacestation was an automated cell culture system - the “Woodland Wanderer 9”. Over
+                the next 50 years no-one has cracked automated mammalian cell culture. What can we learn from their
+                system?</p>
+            <h3><a>The NASA Technical Report Server</a></h3>
+            <p>If you’re working on a problem in science, engineering, or medicine then NASA has already thought about it. NASA’s work touches every part of STEM and fortunately for you they write about most of it on their technical report server (<a href="https://ntrs.nasa.gov/">NTRS</a>). No one should start a project without first checking there! And as a second shot - the Defense Technical Information Center (<a href="https://discover.dtic.mil/">DTIC</a>).</p>
+
+
+        </section>
+
+    </article>
+
+    <script src="include-nav.js"></script>
 </body>
+
 </html>
