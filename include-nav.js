@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const isLocal = window.location.protocol === 'file:';
     
     // Adjust the nav.html path based on whether we're running locally or on a server
-    const navPath = isLocal ? 'nav.html' : '/nav.html';
+    const navPath = isLocal ? 'nav.html' : 'nav.html';
     
     // Fetch the navigation HTML
     fetch(navPath)
