@@ -25,41 +25,90 @@
         .post-excerpt {
             margin-top: 0.5rem;
         }
+
+        .site-nav {
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            border-top: 1px solid #758781;
+            border-bottom: 1px solid #758781;
+            max-width: 1400px;
+            padding-left: 1rem;
+            width: calc(87.5% - 1rem);
+            margin-left: 0;
+        }
+        .site-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-start;
+            gap: 2rem;
+            align-items: center;
+        }
+        .site-nav li {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+        .site-nav a {
+            text-decoration: none;
+            color: #111;
+            font-size: 1.1rem;
+            font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+            display: inline-block;
+            line-height: 1;
+        }
+        .site-nav a:hover {
+            color: #666;
+        }
+        @media (max-width: 760px) {
+            .site-nav {
+                padding-left: 1rem;
+                padding-right: 1rem;
+                width: calc(100% - 2rem);
+            }
+        }
+
+        /* Custom overrides to fix spacing */
+        article {
+            padding-top: 1rem; /* Reduce from 5rem to 1rem */
+        }
+        article > section:first-child {
+            padding-top: 0; /* Remove top padding from first section */
+        }
+        h1 {
+            margin-top: 1rem; /* Reduce from 4rem to 1rem */
+        }
     </style>
 </head>
 
 <body>
     <article>
-
         <section>
             <h1 class="h1">Anecdotes and ideas</h1>
-            <p>I thought I'd start my blog with a long list. I typically have a few dozen ideas in progress - while I'd love to write about these topics myself, if you’d like to write on any of the topics, I’d be pleased for you to take these ideas (if you can call them that).</p>
-
+            <p>I thought I'd start my blog with a long list. I typically have a few dozen ideas in progress - while I'd love to write about these topics myself, if you'd like to write on any of the topics, I'd be pleased for you to take these ideas (if you can call them that).</p>
         </section>
-
 
         <div class="divider"></div>
 
         <section>
-
             <h3>Woodlawn Wanderer 9</h3>
             <p><label for="mn-figure-1" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-figure-1"
                     class="margin-toggle" /><span class="marginnote"><img src="assets/images/WoodlawnWanderer9_hero.png"
                         alt="The Woodlawn Wanderer 9" />The Woodlanawn Wandered 9 - a fully analogue, completely
                     automated
                     mammalian cell culture system.</span>In 1973 NASA launched Skylab 3 - a 59-day, manned, orbital
-                mission. Aboard this spacestation was an automated cell culture system - the “Woodland Wanderer 9”. Over
+                mission. Aboard this spacestation was an automated cell culture system - the "Woodland Wanderer 9". Over
                 the next 50 years no-one has cracked automated mammalian cell culture. What can we learn from their
                 system?</p>
             <h3><a>The NASA Technical Report Server</a></h3>
-            <p>If you’re working on a problem in science, engineering, or medicine then NASA has already thought about it. NASA’s work touches every part of STEM and fortunately for you they write about most of it on their technical report server (<a href="https://ntrs.nasa.gov/">NTRS</a>). No one should start a project without first checking there! And as a second shot - the Defense Technical Information Center (<a href="https://discover.dtic.mil/">DTIC</a>).</p>
-
-
+            <p>If you're working on a problem in science, engineering, or medicine then NASA has already thought about it. NASA's work touches every part of STEM and fortunately for you they write about most of it on their technical report server (<a href="https://ntrs.nasa.gov/">NTRS</a>). No one should start a project without first checking there! And as a second shot - the Defense Technical Information Center (<a href="https://discover.dtic.mil/">DTIC</a>).</p>
         </section>
-
     </article>
 
-    <script src="include-nav.js"></script>
+    <script src="nav.js"></script>
 </body>
 
 </html>
