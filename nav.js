@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <ul>
             <li><a style="font-weight: 100; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif">tsmilton</a></li>
             <li><a href="index.html">Home</a></li>
+            <li><a href="https://tsmilton.com/widgets/">Widgets</a></li>
         </ul>
     `;
 
