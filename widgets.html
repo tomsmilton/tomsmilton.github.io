@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Tufte - tsmilton</title>
+    <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="tufte-css/tufte.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Coral+Pixels&display=swap" rel="stylesheet">
+    <style>
+        /* Adjust scroll position for anchor links */
+        html {
+            scroll-padding-top: 6rem; /* Adjust based on your nav height */
+            scroll-behavior: smooth;
+        }
+        
+        .divider {
+            border-bottom: 1px solid #758781;
+            margin: 1rem 0;
+            width: 87.5%;
+        }
+
+        .post-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .post-title {
+            margin: 0.5rem 0;
+        }
+
+        .post-excerpt {
+            margin-top: 0.5rem;
+        }
+
+        /* Date tile styling */
+        .date-tile {
+            display: inline-block;
+            background-color: #f9f9f9;
+            border: 1px solid #758781;
+            border-radius: 8px;
+            padding: 0.3rem 0.7rem;
+            margin-bottom: 0rem;
+            font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.2;
+        }
+
+        /* Tag tile styling */
+        .tag-tile {
+            display: inline-block;
+            background-color: #e8f0fe;
+            border-radius: 6px;
+            padding: 0.2rem 0.6rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+            font-size: 0.8rem;
+            color: #336699;
+            line-height: 1.2;
+            border: 1px solid #c0d6ea;
+        }
+        
+        .tag-container {
+            margin-bottom: 1rem;
+        }
+
+        .site-nav {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            border-top: 1px solid #758781;
+            border-bottom: 1px solid #758781;
+            max-width: 1400px;
+            padding-left: 1rem;
+            width: calc(87.5% - 1rem);
+            margin-left: 0;
+        }
+        .site-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-start;
+            gap: 2rem;
+            align-items: center;
+        }
+        .site-nav li {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+        .site-nav a {
+            text-decoration: none;
+            color: #111;
+            font-size: 1.1rem;
+            font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+            display: inline-block;
+            line-height: 1;
+        }
+        .site-nav a:hover {
+            color: #666;
+        }
+        @media (max-width: 760px) {
+            .site-nav {
+                padding-left: 1rem;
+                padding-right: 1rem;
+                width: calc(100% - 2rem);
+            }
+        }
+
+        /* Custom overrides to fix spacing */
+        article {
+            padding-top: 1rem; /* Reduce from 5rem to 1rem */
+        }
+        article > section:first-child {
+            padding-top: 0; /* Remove top padding from first section */
+        }
+        h1 {
+            margin-top: 1rem; /* Reduce from 4rem to 1rem */
+        }
+
+        /* Project box styling */
+        .project-box {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: none;
+            border: none;
+            max-width: 55%;
+            width: 55%;
+            position: relative;
+            background-color: transparent;
+        }
+
+        .project-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 2;
+            border: 3px solid #000;
+        }
+
+        .project-box-title {
+            flex: 0 0 30%;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .project-box-title h3 {
+            color: white;
+            margin: 0;
+            font-size: 1.3rem;
+            line-height: 1.3;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+        }
+
+        .project-box-content {
+            flex: 1 1 auto;
+            padding: 1.5rem;
+            background-color: white;
+            font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+            min-width: 0;
+            z-index: 1;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .project-box-content p {
+            margin: 0;
+            line-height: 1.5;
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+            max-width: 100%;
+        }
+        
+        @media (max-width: 1215px) {
+            .project-box {
+                max-width: 87.5%;
+                width: 87.5%;
+            }
+        }
+        
+        @media (max-width: 760px) {
+            .project-box {
+                max-width: 100%;
+                width: 100%;
+                flex-direction: column;
+            }
+            
+            .project-box-title, .project-box-content {
+                flex: auto;
+            }
+            
+            .project-box-title {
+                border-radius: 8px 8px 0 0 !important; /* Override for mobile layout */
+            }
+            
+            .project-box-content {
+                border-radius: 0 0 8px 8px !important; /* Override for mobile layout */
+            }
+        }
+
+        .project-box-blue .project-box-title {
+            background-color: #4098f7;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .project-box-red .project-box-title {
+            background-color: #e53935;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .project-box-green .project-box-title {
+            background-color: #66bb6a;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .project-box-navy .project-box-title {
+            background-color: #1a56a7;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .project-box-orange .project-box-title {
+            background-color: #ffa500;
+            border-radius: 8px 0 0 8px;
+        }
+        .project-box-black .project-box-title {
+            background-color: #000;
+            border-radius: 8px 0 0 8px;
+        }
+        
+
+
+        .cursor-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+        /* Remove link styling from project boxes */
+        a.project-box {
+            text-decoration: none;
+        }
+
+        a.project-box:hover {
+            text-decoration: none;
+        }
+
+        a.project-box .project-box-title h3,
+        a.project-box .project-box-content p {
+            font-style: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <article>
+        <section>
+            <h1 id="widgets" class="h1">Pure vibe coding</h1>
+
+            <p>Vibe coding is perhaps my favourite pasttime.</p>
+
+            <!-- <h3 id="example">Example Section</h3>
+
+            
+
+            <h3 id="sidenote-example">Sidenote Example</h3>
+            <p>Here is an example of a sidenote<label for="sn-example" class="margin-toggle sidenote-number"></label>
+            <input type="checkbox" id="sn-example" class="margin-toggle"/>
+            <span class="sidenote">This is a sidenote that includes a number reference in the main text.</span>
+            which appears with a numbered reference in the text. Sidenotes are great for citations and additional context.</p>
+            
+            <h3 id="features">Available Features</h3>
+            <p>This template includes several features you can use:</p>
+            <ul>
+                <li>Date tiles - for showing publication dates</li>
+                <li>Tag tiles - for categorizing content</li>
+                <li>Margin notes - for additional information</li>
+                <li>Sidenotes - for numbered references</li>
+                <li>Anchor links - for linking directly to sections</li>
+                <li>Project boxes - for highlighting projects</li>
+            </ul>
+            
+            <h3 id="project-boxes">Project Boxes</h3>
+            <p>Below are examples of project boxes that you can use to highlight your projects:</p> -->
+            
+            <a href="#" class="project-box project-box-blue">
+                <div class="project-box-title">
+                    <h3>Hollybush Crack Bot</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>Tweets every time there is a new log on Hollybush Crack.</p>
+                </div>
+            </a>
+
+            <p>This bot is powered by a Github action that runs four times a day. This action runs a Python script that checks Hollybush Crack on UKC (scraping with BeautifulSoup) to see if there is a new log (data stored in a JSON file in the repo). If there is a new ascent then it tweets about it (using the X API). See the Github repo <a href="https://github.com/tsmilton/hollybush-crack-bot">here</a>.</p>
+
+            
+            <a href="https://tsmilton.com/widgets_dev/centroid.html" class="project-box project-box-red">
+                <div class="project-box-title">
+                    <h3>Centroid Finder OG</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>Calculate the centroid of a set of locations. (Original version made with O1)</p>
+                </div>
+            </a>
+            
+            <a href="https://tsmilton.com/widgets_dev/centroid_claude_37.html" class="project-box project-box-red">
+                <div class="project-box-title">
+                    <h3>Centroid Finder V2</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>Calculate the centroid of a set of locations. (One shot Claude 3.7-Sonnet)</p>
+                </div>
+            </a>
+
+            
+            <a href="https://tsmilton.com/widgets_dev/job_selector/job_selector.html" class="project-box project-box-green">
+                <div class="project-box-title">
+                    <h3>Job Selector Tool</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>An app that helps medics rank their job preferences starting with a CSV with all the jobs in.</p>
+                </div>
+            </a>
+
+              
+            <a href="https://tsmilton.com/widgets_dev/deanery_ranker.html" class="project-box project-box-navy">
+                <div class="project-box-title">
+                    <h3>Deanery Ranker</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>Rank the UK medical deaneries to work out your application preferences.</p>
+                </div>
+            </a>
+            
+            
+            <a href="https://tsmilton.com/widgets_dev/house_planner/image-measurement-tool.html" class="project-box project-box-orange">
+                <div class="project-box-title">
+                    <h3>Image measurement tool</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>Upload an image and measure distances, draw shapes, and calculate areas with a reference scale.</p>
+                </div>
+            </a>
+            <a href="https://tsmilton.com/widgets_dev/bin_day/floras_bins.html" class="project-box project-box-black">
+                <div class="project-box-title">
+                    <h3>Flora's bins</h3>
+                    <img src="assets/images/bin_icon.png" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>What is the next bin?</p>
+                </div>
+            </a>
+        </section>
+    </article>
+
+    <script src="nav.js"></script>
+</body>
+
+</html>
