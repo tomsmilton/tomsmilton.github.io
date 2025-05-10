@@ -17,7 +17,7 @@
         .divider {
             border-bottom: 1px solid #758781;
             margin: 1rem 0;
-            width: 87.5%;
+            width: 55%;
         }
 
         .post-date {
@@ -121,6 +121,13 @@
         h1 {
             margin-top: 1rem; /* Reduce from 4rem to 1rem */
         }
+
+        .notebook-image {
+            height: auto;
+            margin-bottom: 0.5rem;
+            max-height: 15em;
+            object-fit: contain;
+        }
     </style>
 </head>
 
@@ -128,7 +135,11 @@
     <article>
         <section>
             <h1 id="anecdotes" class="h1">Anecdotes and ideas</h1>
-            <p>I thought I'd start my blog with a long list. I typically have a few dozen ideas in progress - while I'd love to write about these topics myself, if you'd like to write on any of the topics, I'd be pleased for you to take these ideas (if you can call them that).</p>
+
+            <p><label for="mn-figure-1" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-figure-1"
+                class="margin-toggle" /><span class="marginnote"><img src="assets/images/notebook.png"
+                    alt="Notes" class="notebook-image" /><br>14 yr old Tom's blog post list.</span>
+                    While moving house, I found an old notebook from when I was 14. It contained a list of cycling equipment blog ideas, inspired by DC Rainmaker. I spent hours planning these posts but never had the courage to publish anything.<br><br>  To break this pattern, I'm now keeping some of my ideas in a public list. This doesn't include my professional projects—for those, DM me for Google Doc access.</p>
         </section>
 
         <div class="divider"></div>
@@ -177,7 +188,7 @@
         <p><em>PS. I already give >10% of my salary to effective charities and this wouldn't replace that.</em></p>
         
         <h3 id="funding-mechanisms">Funding mechanism failure case studies</h3>
-        <div class="date-tile">May 01, 2025</div>
+        <!-- <div class="date-tile">May 01, 2025</div> -->
         <p>I'm often in conversations about how to help UK startups raise investment. A classic question is "how do we support founders who are too early for UK venture capital?". As I spoke to one policy maker about these very question I realised I didn't really know if these "unfundable" people or ideas existed. I want clear case studies for funding mechanisms failing - without these it is really difficult to properly diagnose what is going wrong. I fear that in discussions about startup funding people are talking over one another as they do not have a shared understanding of what ideas are not being funded.</p>
         
         <h3 id="more">And many more being added...</h3>

@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <li><a style="font-weight: 100; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif">tsmilton</a></li>
             <li><a href="index.html">Home</a></li>
             <li><a href="widgets.html">Widgets</a></li>
-            <li><a href="https://www.amododesign.com/">Amodo</a></li>
+            <li><a href="scrapbook.html">Amodo</a></li>
         </ul>
     `;
 
