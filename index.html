@@ -74,7 +74,6 @@
             border-radius: 3px;
             border: 1px solid #758781;
             width: 52%;
-            /* margin-right: 12.5%; */
         }
 
         .filter-container h4 {
@@ -175,6 +174,18 @@
             margin-bottom: 0.5rem;
             max-height: 20em;
             object-fit: contain;
+        }
+
+        @media (max-width: 760px) {
+            .divider {
+                width: 100%;
+            }
+            
+            .filter-container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+                width: calc(100% - 2rem);
+            }
         }
     </style>
 </head>
