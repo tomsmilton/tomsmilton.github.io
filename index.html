@@ -176,6 +176,72 @@
             object-fit: contain;
         }
 
+        /* Copy button styling */
+        .copy-button {
+            display: inline-flex;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 0.5rem;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+            position: relative;
+            top: 5px;
+        }
+
+        .copy-button:hover {
+            opacity: 1;
+        }
+
+        .copy-button img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .copy-text {
+            display: none;
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Tooltip styling */
+        .copy-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 3s ease-in-out;
+            pointer-events: none;
+            white-space: nowrap;
+            visibility: hidden;
+        }
+
+        .copy-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            animation: fadeOut 3s ease-in-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         @media (max-width: 760px) {
             .divider {
                 width: 100%;
@@ -185,6 +251,34 @@
                 padding-left: 1rem;
                 padding-right: 1rem;
                 width: calc(100% - 2rem);
+            }
+
+            .title-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+
+            .copy-button {
+                margin-left: 0;
+                margin-top: 0.25rem;
+            }
+
+            .copy-text {
+                display: inline;
+            }
+
+            .copy-tooltip {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                top: auto;
+                background-color: rgba(51, 51, 51, 0.9);
+                padding: 8px 16px;
+                font-size: 14px;
+                border-radius: 20px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             }
         }
     </style>
@@ -222,7 +316,12 @@
 
 
         <section class="post-section">
-            <h3 id="woodlawn-wanderer">Woodlawn Wanderer 9</h3>
+            <div class="title-container">
+                <h3 id="woodlawn-wanderer">Woodlawn Wanderer 9</h3>
+                <button class="copy-button" onclick="copyLink('woodlawn-wanderer')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p><label for="mn-figure-1" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-figure-1"
                     class="margin-toggle" /><span class="marginnote"><img src="assets/images/WoodlawnWanderer9_hero.png"
                         alt="The Woodlawn Wanderer 9" />The Woodlawn Wandered 9 - a fully analogue, completely
@@ -238,14 +337,24 @@
         </section>
 
         <section class="post-section">
-            <h3 id="nasa-reports"><a>The NASA Technical Report Server</a></h3>
+            <div class="title-container">
+                <h3 id="nasa-reports"><a>The NASA Technical Report Server</a></h3>
+                <button class="copy-button" onclick="copyLink('nasa-reports')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p>If you're working on a problem in science, engineering, or medicine then NASA has already thought about it. NASA's work touches every part of STEM and fortunately for you they write about most of it on their technical report server (<a href="https://ntrs.nasa.gov/">NTRS</a>). No one should start a project without first checking there! And as a second shot - the Defense Technical Information Center (<a href="https://discover.dtic.mil/">DTIC</a>).</p>
             <div class="tag-container">
                 <span class="tag-tile">s&t</span>            </div>
         </section>
 
         <section class="post-section">
-            <h3 id="consultancy-vc"><a>Consultancy as a model for DeepTech VC</a></h3>
+            <div class="title-container">
+                <h3 id="consultancy-vc"><a>Consultancy as a model for DeepTech VC</a></h3>
+                <button class="copy-button" onclick="copyLink('consultancy-vc')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p><label for="sn-extensive-use-of-sidenotes" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-extensive-use-of-sidenotes" class="margin-toggle"/><span class="sidenote">h/t to Eric Gilliam for pitching the term "a new model for DeepTech VC" in his work on the MIT Technology Plan - the US version of this story.</span> Cambridge Consultants has spun out twenty-seven startups and four unicorns - a track record better than any UK venture capitalist or university. If CC were in the Silicon Valley, we would all know how they achieved this, I want to tell this story better and bring more information about their heyday to the startup community. David Connell's piece "<a href="http://davidconnell.org/research-reports-and-company-case-studies/">Exploding the Myths of UK Innovation Policy</a>" is a great reference text for this.</p>
             <div class="tag-container">
                 <span class="tag-tile">s&t</span>
@@ -254,7 +363,12 @@
         </section>
 
         <section class="post-section">
-            <h3 id="devolved-authority">Devolved authority thinktank</h3>
+            <div class="title-container">
+                <h3 id="devolved-authority">Devolved authority thinktank</h3>
+                <button class="copy-button" onclick="copyLink('devolved-authority')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p>UKG are devolving more decision making and spending power to the regions (Mayoral Combined Authorities), but the ecosystem required to support policy making has not moved. In London there are clusters of thinktanks proposing and supporting new policy ideas. What would it look like to have a local South Yorkshire thinktank with inside views on policies for South Yorkshire?</p>
             <div class="tag-container">
                 <span class="tag-tile">policy</span>
@@ -263,7 +377,12 @@
         </section>  
 
         <section class="post-section">
-            <h3 id="sheffield-projects">Sheffield projects</h3>
+            <div class="title-container">
+                <h3 id="sheffield-projects">Sheffield projects</h3>
+                <button class="copy-button" onclick="copyLink('sheffield-projects')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p>I've always got a rogue pitch for something that I'd like to be built in Sheffield:</p>
             <p><em>SYMCA should buy Stanage Lodge and turn it into an "investor retreat venue".</em> They should then wine and dine US VCs pitching Sheffield as the outdoor city with an engineering heritage.</p>
             <p><em>Crookes needs a hub.</em> There is no natural meeting point for group rides or runs. The Crookes sports club could easily be turned into a cafe / community space that becomes the outdoor sports hub of Crookes.</p>
@@ -276,7 +395,12 @@
         </section>
 
         <section class="post-section">
-            <h3 id="phone-masts">Phone masts the length of the train line</h3>
+            <div class="title-container">
+                <h3 id="phone-masts">Phone masts the length of the train line</h3>
+                <button class="copy-button" onclick="copyLink('phone-masts')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p>I write this from the comfort of the 7AM Sheffield to London train. The journey has been an "offline Google Docs" only affair. Occasionally I get really fast mobile data and can attempt to quickly catchup with emails but communication with the outside world is limited. My understanding is that this is not a technological problem but one of market incentives<label for="sn-extensive-use-of-sidenotes" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-extensive-use-of-sidenotes" class="margin-toggle"/><span class="sidenote">This thesis might be wrong - more research needed.</span>. Network providers are incentivised by UKG to install phone masts based on where people live. Changing these rules to cover major commuter routes could be a quick and cheap upgrade to the UK rail network.</p>
             <div class="tag-container">
                 <span class="tag-tile">policy</span>
@@ -284,7 +408,12 @@
         </section>
 
         <section class="post-section">
-            <h3 id="melatonin">Why is melatonin not over the counter in the UK?</h3>
+            <div class="title-container">
+                <h3 id="melatonin">Why is melatonin not over the counter in the UK?</h3>
+                <button class="copy-button" onclick="copyLink('melatonin')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p>Since 1995, melatonin has been a prescription-only drug in the UK, why is this and what would have to happen for this to change?<label for="sn-extensive-use-of-sidenotes" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-extensive-use-of-sidenotes" class="margin-toggle"/><span class="sidenote">Deep Research has given me a pretty good answer to these questions already.</span> A full cost-benefit would consider the impact it would have on nightshift workers including doctors.</p>
             <div class="tag-container">
                 <span class="tag-tile">policy</span>
@@ -292,7 +421,12 @@
         </section>
 
         <section class="post-section">
-            <h3 id="microgrants">Personal microgrants programme</h3>
+            <div class="title-container">
+                <h3 id="microgrants">Personal microgrants programme</h3>
+                <button class="copy-button" onclick="copyLink('microgrants')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p>December 2016, after Church I sit excitedly in the Grindstone pub, pitching my friends on giving out mince pies to our whole engineering cohort. Without request Mark Russel whipped out £20 to pay for the idea. This small amount of money had a huge impact on me - Mark encouraged high-agency, funded me, and counterfactually made the mince pie handing out happen.</p>
             <p>£100-1000 has a huge impact on students. I for one would have dedicated all my free time to something if given that much money. Should I have a tiny grant pot to incentivise people to pickup projects?</p>
             <div class="tag-container">
@@ -300,21 +434,36 @@
         </section>
 
         <section class="post-section">
-            <h3 id="funding-mechanisms">Funding mechanism failure case studies</h3>
+            <div class="title-container">
+                <h3 id="funding-mechanisms">Funding mechanism failure case studies</h3>
+                <button class="copy-button" onclick="copyLink('funding-mechanisms')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p>I'm often in conversations about how to help UK startups raise investment. A classic question is "how do we support founders who are too early for UK venture capital?". As I spoke to one policy maker about this very question I realised I didn't really know if these "unfundable" people or ideas existed. I want clear case studies for funding mechanisms failing - without these it is really difficult to properly diagnose what is going wrong. I fear that in discussions about startup funding people are talking over one another as they do not have a shared understanding of what ideas are not being funded.</p>
             <div class="tag-container">
                 <span class="tag-tile">policy</span>
             </div>
         </section>
         <section class="post-section">
-            <h3 id="baguettes">The only <strong>real</strong> French baguette in London</h3>
-            <p>Everyone (?) loves French bread, and somehow it's impossible to find in the UK. Somewhere between Calais and Dover, bakers lose the ability to create the perfect baguette. Fortunately, at 7:12 AM every morning (and every half hour after that), a train screams from Paris to London. Fill the luggage racks with baguettes, open a stall at the King’s Cross Market, and you’d make a killing from the only “real” French baguette in London.</p>
+            <div class="title-container">
+                <h3 id="baguettes">The only <strong>real</strong> French baguette in London</h3>
+                <button class="copy-button" onclick="copyLink('baguettes')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
+            <p>Everyone (?) loves French bread, and somehow it's impossible to find in the UK. Somewhere between Calais and Dover, bakers lose the ability to create the perfect baguette. Fortunately, at 7:12 AM every morning (and every half hour after that), a train screams from Paris to London. Fill the luggage racks with baguettes, open a stall at the King's Cross Market, and you'd make a killing from the only "real" French baguette in London.</p>
             <div class="tag-container">
                 <span class="tag-tile">silly</span>
             </div>  
         </section>
         <section class="post-section">
-            <h3 id="sevres">Post-singularity sidewalk</h3>
+            <div class="title-container">
+                <h3 id="sevres">Post-singularity sidewalk</h3>
+                <button class="copy-button" onclick="copyLink('sevres')">
+                    <img src="assets/images/copy.svg" alt="Copy link">
+                </button>
+            </div>
             <p>
             <label for="mn-figure-1" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-figure-1"
                     class="margin-toggle" /><span class="marginnote"><img src="assets/images/PostSignularitySidewalk.jpeg"
@@ -335,6 +484,51 @@
 
     <script src="nav.js"></script>
     <script src="filter.js"></script>
+    <script>
+        // Initialize copy buttons with text
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButtons = document.querySelectorAll('.copy-button');
+            copyButtons.forEach(button => {
+                let copyText = button.querySelector('.copy-text');
+                if (!copyText) {
+                    copyText = document.createElement('span');
+                    copyText.className = 'copy-text';
+                    copyText.textContent = 'Copy link to heading';
+                    button.appendChild(copyText);
+                }
+            });
+        });
+
+        function copyLink(id) {
+            const url = window.location.href.split('#')[0] + '#' + id;
+            navigator.clipboard.writeText(url).then(() => {
+                const button = document.querySelector(`button[onclick="copyLink('${id}')"]`);
+                
+                // Create tooltip if it doesn't exist
+                let tooltip = button.querySelector('.copy-tooltip');
+                if (!tooltip) {
+                    tooltip = document.createElement('div');
+                    tooltip.className = 'copy-tooltip';
+                    tooltip.textContent = 'Copied!';
+                    button.appendChild(tooltip);
+                }
+
+                // Remove any existing animation
+                tooltip.classList.remove('show');
+                void tooltip.offsetWidth; // Trigger reflow
+                
+                // Show tooltip with animation
+                tooltip.classList.add('show');
+
+                // Visual feedback on button
+                const originalOpacity = button.style.opacity;
+                button.style.opacity = '1';
+                setTimeout(() => {
+                    button.style.opacity = originalOpacity;
+                }, 500);
+            });
+        }
+    </script>
 </body>
 
 </html>
