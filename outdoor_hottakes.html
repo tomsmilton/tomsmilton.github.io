@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tsmilton</title>
+    <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="tufte-css/tufte.css">
+    <style>
+        /* Adjust scroll position for anchor links */
+        html {
+            scroll-padding-top: 6rem; /* Adjust based on your nav height */
+            scroll-behavior: smooth;
+        }
+        
+        .divider {
+            border-bottom: 1px solid #758781;
+            margin: 1rem 0;
+            width: 55%;
+        }
+
+        .post-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .post-title {
+            margin: 0.5rem 0;
+        }
+
+        .post-excerpt {
+            margin-top: 0.5rem;
+        }
+
+        /* Date tile styling */
+        .date-tile {
+            display: inline-block;
+            background-color: #f9f9f9;
+            border: 1px solid #758781;
+            border-radius: 8px;
+            padding: 0.3rem 0.7rem;
+            margin-bottom: 0rem;
+            font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.2;
+        }
+
+        /* Tag tile styling */
+        .tag-tile {
+            display: inline;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .tag-tile:not(:last-child)::after {
+            content: ", ";
+        }
+
+        .tag-tile:first-child::before {
+            content: "#";
+        }
+
+        .tag-container {
+            margin-top: 0rem;
+            color: #666;
+            font-size: 0.9rem;
+            padding-bottom: 1rem;  /* Add padding at the bottom */
+        }
+
+        .post-section {
+            transition: opacity 0.3s ease;
+        }
+
+        .post-section.hidden {
+            display: none;
+        }
+
+        .site-nav {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            border-top: 1px solid #758781;
+            border-bottom: 1px solid #758781;
+            max-width: 1400px;
+            padding-left: 1rem;
+            width: calc(87.5% - 1rem);
+            margin-left: 0;
+        }
+        .site-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-start;
+            gap: 2rem;
+            align-items: center;
+        }
+        .site-nav li {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+        .site-nav a {
+            text-decoration: none;
+            color: #111;
+            font-size: 1.1rem;
+            font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+            display: inline-block;
+            line-height: 1;
+        }
+        .site-nav a:hover {
+            color: #666;
+        }
+        @media (max-width: 760px) {
+            .site-nav {
+                padding-left: 1rem;
+                padding-right: 1rem;
+                width: calc(100% - 2rem);
+            }
+        }
+
+        /* Custom overrides to fix spacing */
+        article {
+            padding-top: 1rem; /* Reduce from 5rem to 1rem */
+        }
+        article > section:first-child {
+            padding-top: 0; /* Remove top padding from first section */
+        }
+        h1 {
+            margin-top: 1rem; /* Reduce from 4rem to 1rem */
+        }
+
+        .notebook-image {
+            height: auto;
+            margin-bottom: 0.5rem;
+            max-height: 20em;
+            object-fit: contain;
+        }
+
+        /* Copy button styling */
+        .copy-button {
+            display: block;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 0;
+            margin-left: 0;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+            width: auto;
+            text-align: left;
+        }
+
+        .copy-button:hover {
+            opacity: 1;
+        }
+
+        .copy-button img {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+
+        .copy-text {
+            display: inline;
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            vertical-align: middle;
+        }
+
+        /* Tooltip styling */
+        .copy-tooltip {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: none;
+            background-color: rgba(51, 51, 51, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 3s ease-in-out;
+            pointer-events: none;
+            white-space: nowrap;
+            visibility: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .copy-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            animation: fadeOut 3s ease-in-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 760px) {
+            .divider {
+                width: 100%;
+            }
+            
+
+            .title-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <article>
+        <section>
+            
+            
+
+            <h1 id="anecdotes" class="h1">Hot takes on all things outdoor activities</h1>            
+
+            <p>Most of my unncessarily strongly held views are to do with outdoor activities. It is common for climbers to have a strong sense of aesthetic and ethic - typically founded in beliefs passed down through the generations. 
+                <br>                <br>
+
+                This mostly covers my strong views on outdoor equipment. I get particularly upset when people are put off the outdoor by either uncessariyl expensive equipoment or poor equipment that lowers people’s enjoyment of the outdoors. </p>
+
+                    <div class="divider"></div>
+
+        
+            <h2 id="fell-running">(Fell) Running </h2>
+
+            <p><label for="BobGraham_start" class="margin-toggle">&#8853;</label><input type="checkbox" id="BobGraham_start"
+                class="margin-toggle" /><span class="marginnote"><img src="assets/images/outdoor/BobGraham_start.JPG"
+                    alt="Start of the Bob" class="notebook-image"/><br>Setting off on the Bob Graham Round (~100km, 8000m elevation gain) wearing shoes from Facebook marketplace, a bag I got for free, and a jumper I've had since I was 12.</span>To run you need shoes and clothes. Running instagram would have you believe you need a special t-shirt, double skin socks, and a brand new Garmin. When I ran the Bob Graham Round I wore a £10 pair of shorts from Decathlon, a running t-shirt I got for free from the mountaineering club, a falling to bits running bag from a Facebook group, a bright green jumper I’d had since I was 12 and a pair of shoes I bought on Facebook marketplace for £15. 
+
+            </p>
+
+            <h3>New Balance Summit Unknown 2s - discontinued</h3>
+            <p>The best general purpose trail shoes. My Summit Unknown have done >2500 Kms including 100s of kilometers on rough, rocky, mountain terrain. They’re beginning to look a bit worese for wear but amazingly the soles are still in tact and they remain my favourite shoes for trails. 
+
+                I love them because they’re low to the ground so I don’t twist my ankles when wearing them, have good enough tread for running off-road but not so much that they’re uncomfy on tarmac, and have survived a lot of harsh kilometers. 
+            
+                <br> <br> Trends have changed and New Balance no longer make a good Summit Unkown. If anyone comes across a pair of Summit Unknowns 2s in a UK 5 I will pay good money for them.
+            </p>
+
+            <h3>Adidas Boston 8s & 9s - discontinued</h3>
+
+            <p>Pair your Summit Unknowns with Adidas Bostons. A simple, light, comfortable, and low-profile shoe the Adidas Boston 8 and 9 are neutral shoes great for training and racing. They are simple. My Boston 8s did track sessions, road races, and the odd fell race! As per every other shoe Adidas changed the design to add too much stack height. With a little searching you can find old pairs of this perfectly simple shoe.</p>
+            
+            <h3>Decathlon 3" split-shorts - discountinued</h3>
+            <p>Somehow running brands have tricked people into spending £50 on running shorts. Until ~2022 Decathlon sold a pair of perfectly adequate 3" split-shorts for <£10. They were a nice light material, had  a small zip pocket, and were comfortable. For some reason Decathlon have replaced these with a pair of shorts that remind me of playing Rugby at school.             </p>
+
+            <h3>Buy the cheapest Garmin</h3>
+            <p>If you run for less then 5 hours at a time then buy the cheapest Garmin - even better buy one on Facebook marketplace. For the last 10 years my running watches have been hand-me-downs from my father. They do the job I want them to do - track my runs and let me upload them to Strava afterwards. Yes their battery life is a bit poor, yes they don’t track my sleep, or provide a map. But all I want is to track my runs. My ideal watch would be a Casio xyz with GPS tracking. It would show me very few metrics and then afterwards upload my GPS trace. </p>
+
+
+        
+        <h2>Mountain Things</h2>
+        <h3>Showa Temres 282</h3>
+        <p>Also known as “Japense fishing gloves” the Temres 282 is essentially a fleece lined washing up glove. Beloved by mountaineers they are both warm and waterproof. 
+            <br><br>
+            My favourite 282 annecdote is that Steve House, Patagonia sponsored mountianeer, wears these in preference of any glove Patagonia produce. They’re <£30 and readily replace your >£100 mountaineering gloves. Everyone should own a pair of Temres 282s even if they’re just for emergencies or clearing the snow off the car windscreen. 
+            </p>
+
+        <h3>No-one should wear walking boots!</h3>
+
+        <p>As kids we were taught that to walk up mountains we must wear walking boots. Without walking boots our ankles would simply collapse and we’d be left to perish in the wilderness.  I believe that, because they’re so heavy and uncomfrotable, people are genuinely put off walking by being made to wear walking boots. I hypothesise that more people would enjoy walking if they wore their trainers. The contributing factors are that:
+            
+            <ul>
+            <li>They’re too heavy. It’s not fun to walk in heavy shoes. Walking boots weigh [y times] more than running trainers.</li> 
+            <li> They're worn once a year. Because people tend to only wear their walking boots a few times a year they never properly wear them in. This means wearing walking boots can be a perpetual cycle of blisters.
+            </li>
+            
+            <li>They dry slowly. Being waterproof is great but as soon as water goes over the top of your boots they’re sodden. If you’re walking for multiple days it can be more useful for your shoes to dry quickly
+    </li>
+        </ul>
+            <br><br>There is a place for walking boots and I ocassionally enjoy wearing mine.
+            
+        </p>
+
+        <h3>Headtorches</h3>
+        <p>I’m a bit confused about headtorches. They should be solved! The basic design topology should be an 18650 battery, a simply charge circuit, and a handful of CREE LEDs (run below their power rating to improve efficiency and lifetime). Petzl sell over engineered but very nice headtorches and eBay sells “CREE headtorches” with poor QC. I think the best option is currently an eBay headtorch, but I would like someone to take this basic design and produce them with better quality control.
+        </p>
+
+        
+        <h2>Climbing</h2>
+        <h3>Climbing Shoes</h3>
+        <p>Good climbing shoes are always worth it. Never buy La Sportiva Tarantulas or Scarpa crap things or Black Diamond shit things. They’re bad and they make climbing much less fun. 
+
+            Most new climbers will enjoy climbing in either Scarpa Vapour Vs or La Sportiva Miuras. I find that the Vapours are better for narrower feet and the Miuras better for wider feet. 
+            
+            Start there and then develop your own shoe taste - but never buy bad shoes. 
+            </p>
+
+            <h3>Beal Karma</h3>
+
+            <p><label for="woodlawn-fig" class="margin-toggle">&#8853;</label><input type="checkbox" id="woodlawn-fig"
+                class="margin-toggle" /><span class="marginnote"><img src="assets/images/outdoor/964ea25d-fb1a-441b-a8c0-f5a293015ccd.JPG"
+                    alt="Ropes" class="notebook-image" /><br>Not a Beal Karma.</span>Nice ropes are nice, but most of the time you just need a Beal Karma. Often sold for ~£1 per meter this cheap rope handles well, looks okay, and last long enough. The great advantage of a Beal Karma is that they’re cheap enough that you can just use them properly. No need to keeping your rope in a rope bag or worrying about it wearing away on the grit. The Beal Karma is a utility rope and the default that everyone should buy. 
+            </p>s
+
+        
+        </section>
+    </article>
+
+    <script src="nav.js"></script>
+    <script>
+        // Initialize copy buttons with text
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButtons = document.querySelectorAll('.copy-button');
+            copyButtons.forEach(button => {
+                let copyText = button.querySelector('.copy-text');
+                if (!copyText) {
+                    copyText = document.createElement('span');
+                    copyText.className = 'copy-text';
+                    copyText.textContent = 'Copy link to idea';
+                    button.appendChild(copyText);
+                }
+            });
+        });
+
+        function copyLink(id) {
+            const url = window.location.href.split('#')[0] + '#' + id;
+            navigator.clipboard.writeText(url).then(() => {
+                const button = document.querySelector(`button[onclick="copyLink('${id}')"]`);
+                
+                // Create tooltip if it doesn't exist
+                let tooltip = button.querySelector('.copy-tooltip');
+                if (!tooltip) {
+                    tooltip = document.createElement('div');
+                    tooltip.className = 'copy-tooltip';
+                    tooltip.textContent = 'Copied!';
+                    button.appendChild(tooltip);
+                }
+
+                // Remove any existing animation
+                tooltip.classList.remove('show');
+                void tooltip.offsetWidth; // Trigger reflow
+                
+                // Show tooltip with animation
+                tooltip.classList.add('show');
+
+                // Visual feedback on button
+                const originalOpacity = button.style.opacity;
+                button.style.opacity = '1';
+                setTimeout(() => {
+                    button.style.opacity = originalOpacity;
+                }, 500);
+            });
+        }
+    </script>
+</body>
+
+</html>
