@@ -373,8 +373,32 @@
             </a>
 
             <p>At the end of medical school UK doctors have to rank the regions of the UK. They take a list of deanearies and stack them up in order of preference. Again they are given no helpful guidance on how to do this and often spend hours agonising over a spreadsheet. This tool has all the deaneries pre-loaded and allows you to quickly go through a pairwise comparison.</p>
-            
-            
+
+            <a href="https://tsmilton.com/widgets_dev/IV_calculator.html" class="project-box project-box-green">
+                <div class="project-box-title">
+                    <h3>Paediatric Fluid Calculator</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>Work out maintenance fluids, boluses and deficit replacement for a paediatric patient from their weight.</p>
+                </div>
+            </a>
+
+            <p>Another one for the doctors. Paediatric fluid prescribing runs off standard weight-based formulas - the 4-2-1 rule for maintenance, 10-20 ml/kg boluses, and deficit replacement - but doing the sums by hand on a busy ward is slow and error-prone. Punch in the weight and this gives you the numbers instantly.</p>
+
+            <a href="https://tsmilton.com/jaundice/" class="project-box project-box-navy">
+                <div class="project-box-title">
+                    <h3>Bilirubin Threshold</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>Plot a newborn's serum bilirubin against the NICE CG98 phototherapy and exchange-transfusion thresholds.</p>
+                </div>
+            </a>
+
+            <p>One more for the doctors, and the most carefully checked thing here. Newborn jaundice is managed by plotting a baby's serum bilirubin against age-specific treatment thresholds from NICE CG98 - normally read off a paper chart. Give it the gestational age, birth time and a reading or two and it computes the phototherapy and exchange thresholds, plots them, and works out the rate of rise. The thresholds are pinned numerically against NICE's official Excel workbook with a row-by-row test suite. It's for qualified clinicians only and isn't a medical device.</p>
+
+
             <a href="https://tsmilton.com/widgets_dev/house_planner/image-measurement-tool.html" class="project-box project-box-orange">
                 <div class="project-box-title">
                     <h3>Image measurement tool</h3>
@@ -399,7 +423,19 @@
 
         <p>Sheffield City Council have a helpful website for residents to check which bin will be collected next. Whilst it works well it is far too many clicks. I just want to open a page and see the colour of the next bin. This tool uses a Github action once a day to scrape the council's website and then presents a simple interface with the next bin.</p>
 
-            
+            <a href="https://tomsmilton.github.io/isitaurora/" class="project-box project-box-navy">
+                <div class="project-box-title">
+                    <h3>Is it Aurora?</h3>
+                    <img src="assets/images/mouse.svg" alt="Mouse icon" class="cursor-icon">
+                </div>
+                <div class="project-box-content">
+                    <p>Are East Midlands Railway's Sheffield to London St Pancras trains running as the new Class 810 Aurora or the old Class 222 Meridian?</p>
+                </div>
+            </a>
+
+        <p>EMR are rolling out their new Class 810 "Aurora" trains on the Sheffield to St Pancras line and they're a lot nicer than the ageing Class 222 Meridians. I wanted to know in advance which I'd be getting. A Github action runs seven times a day, pulls the schedule from the Realtime Trains API, scrapes the confirmed day-of train formation, and regenerates a static page telling you what's running.</p>
+
+
         </section>
     </article>
 
