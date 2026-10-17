@@ -1,0 +1,47 @@
+---
+// "Quick Notes!" with the author (the compass photo) standing on the closing rule.
+import { Image } from 'astro:assets';
+import boy from '../../assets/author-compass.png';
+import { site } from '../../site.config';
+
+interface Props { heading?: string }
+const { heading = 'Quick Notes!' } = Astro.props;
+---
+<header class="nhead">
+  <div class="nhead__text">
+    <h1>{heading}</h1>
+    <div class="nhead__intro">
+      <slot>
+        <p>This page is inspired by <a class="link" href="https://www.jefftk.com/">Jeff Kaufman's blog</a>; regular posts of interesting things, however big or small. The idea of quick notes is to force me to post regularly and lower my bar for what I consider acceptable to share. Longer posts live in <a class="link" href="/writing/">Writing</a>.</p>
+        <p>For now the page is populated with the “ideas” from my {site.oldSite !== '#' ? <a class="link" href={site.oldSite}>old website</a> : 'old website'}, they're a bit like quick notes.</p>
+      </slot>
+    </div>
+  </div>
+  <div class="nhead__boy">
+    <Image src={boy} alt="Thomas as a boy, in a no fear T-shirt with a compass on his belt" widths={[180, 360, 540]} sizes="(min-width: 1080px) 120px, 92px" />
+  </div>
+</header>
+
+<style>
+  .nhead { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--ink); }
+  .nhead__text { padding-bottom: 26px; min-width: 0; }
+  h1 { margin: 0; font-weight: 300; font-size: clamp(54px, 8vw, 116px); line-height: 0.95; letter-spacing: -0.02em; }
+  .nhead__intro { max-width: 34em; margin-top: 22px; font-size: clamp(17px, 1.45vw, 19px); line-height: 1.55; color: var(--text); }
+  .nhead__intro :global(p) { margin: 0 0 10px; }
+  .nhead__intro :global(p:last-child) { margin-bottom: 0; }
+  .nhead__boy { flex-shrink: 0; align-self: flex-end; }
+  /* brightened a touch, with a white sticker edge and a hairline so it shows on warm white;
+     the photo's bottom is a straight cut, so it stands on the rule and the edge is clipped there */
+  .nhead__boy :global(img) {
+    display: block; width: auto; height: 176px; margin-bottom: -1px;
+    clip-path: inset(-12px -12px 0 -12px);
+    filter: brightness(1.12) saturate(1.04) drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 0 0.6px rgba(30, 34, 64, 0.35));
+  }
+  @media (min-width: 1080px) {
+    .nhead__boy { width: 280px; display: flex; justify-content: flex-start; padding-left: 40px; }
+    .nhead__boy :global(img) {
+      height: 252px;
+      filter: brightness(1.12) saturate(1.04) drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(0 0 0.6px rgba(30, 34, 64, 0.35));
+    }
+  }
+</style>

@@ -14,14 +14,14 @@ export const site = {
   // Which posts render natively is set in src/data/substack.config.json (used by `npm run sync`).
   substack: { url: substack.publication, native: substack.native },
 
-  // The index on the homepage. Only Writing is live for now; uncomment a section to add it back
+  // The index on the homepage. Only Writing and Quick notes are live for now; uncomment a section to add it back
   // (it gets a short "coming soon" page until it's built).
   index: [
     // { label: 'Work', href: '/work/' },
     { label: 'Writing', href: '/writing/' },
+    { label: 'Quick notes', href: '/notes/' },
     // { label: 'Photographs', href: '/photographs/' },
     // { label: 'Objects', href: '/objects/' },
-    // { label: 'Notes', href: '/notes/' },
     // { label: 'About', href: '/about/' },
   ],
 };

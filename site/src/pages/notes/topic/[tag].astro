@@ -1,0 +1,44 @@
+---
+// Quick notes filed under one topic.
+import Base from '../../../layouts/Base.astro';
+import NotesHeader from '../../../components/notes/NotesHeader.astro';
+import NoteEntry from '../../../components/notes/NoteEntry.astro';
+import NotesAside from '../../../components/notes/NotesAside.astro';
+import { getNotes, tagCounts, tagSlug, type Note } from '../../../lib/notes';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return tagCounts(notes).map(([tag]) => ({
+    params: { tag: tagSlug(tag) },
+    props: { tag, tagged: notes.filter((n) => n.data.tags.includes(tag)), notes },
+  }));
+}
+
+interface Props { tag: string; tagged: Note[]; notes: Note[] }
+const { tag, tagged, notes } = Astro.props;
+---
+<Base title={`Quick notes on ${tag}`} crumbs={[{ label: 'notes', href: '/notes/' }, { label: tag }]}>
+  <main class="notes">
+    <NotesHeader heading="Quick Notes!">
+      <p>Filed under <b>{tag}</b>: {tagged.length} {tagged.length === 1 ? 'note' : 'notes'}. <a class="link" href="/notes/">See them all</a>.</p>
+    </NotesHeader>
+    <div class="notes__grid">
+      <div class="notes__feed">
+        {tagged.map((note) => <NoteEntry note={note} />)}
+      </div>
+      <NotesAside notes={notes} />
+    </div>
+  </main>
+</Base>
+
+<style>
+  .notes { max-width: 1120px; margin: 0 auto; padding: 40px var(--gutter) 96px; }
+  .notes__grid { display: grid; gap: 56px; }
+  .notes__feed { max-width: 640px; padding-top: 36px; }
+  .notes :global(.nhead b) { font-weight: 500; }
+  @media (max-width: 1079px) { .notes__grid { grid-template-columns: minmax(0, 1fr); } }
+  @media (min-width: 1080px) {
+    .notes { padding-top: 64px; }
+    .notes__grid { grid-template-columns: minmax(0, 640px) 280px; justify-content: space-between; gap: 80px; }
+  }
+</style>

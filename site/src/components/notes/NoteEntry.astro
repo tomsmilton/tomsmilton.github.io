@@ -1,0 +1,110 @@
+---
+// One quick note. In the feed, notes longer than a few blocks collapse after
+// the first two and open in place; on a note's own page it runs in full.
+import NoteFigure from './NoteFigure.astro';
+import { formatDate } from '../../lib/posts';
+import { noteBody, noteHref, tagHref, type Note } from '../../lib/notes';
+
+interface Props { note: Note; full?: boolean }
+const { note, full = false } = Astro.props;
+const { title, date, tags, image, imageAlt, caption } = note.data;
+const { blocks, footnotes, words } = noteBody(note);
+
+// The photo (if any) sits after the first paragraph and counts as a block.
+type Item = { html: string } | { figure: true };
+const items: Item[] = blocks.map((html) => ({ html }));
+if (image) items.splice(1, 0, { figure: true });
+const collapse = !full && items.length > 3;
+const shown = collapse ? items.slice(0, 2) : items;
+const rest = collapse ? items.slice(2) : [];
+const href = noteHref(note);
+const Heading = full ? 'h1' : 'h2';
+---
+<article class:list={['note', { 'note--full': full }]} id={note.id}>
+  <header class="note__head">
+    {title
+      ? <Heading class="note__title">{full ? title : <a href={href}>{title}</a>}</Heading>
+      : null}
+    <time class="note__date" datetime={date.toISOString()}>{title || full ? formatDate(date) : <a href={href}>{formatDate(date)}</a>}</time>
+  </header>
+
+  <div class="note__body">
+    {shown.map((it) => 'html' in it ? <Fragment set:html={it.html} /> : <NoteFigure src={image!} alt={imageAlt ?? ''} caption={caption} />)}
+    {collapse && (
+      <details class="more">
+        <summary>Continue reading ↓ <span>· {words.toLocaleString('en-GB')} words</span></summary>
+        {rest.map((it) => 'html' in it ? <Fragment set:html={it.html} /> : <NoteFigure src={image!} alt={imageAlt ?? ''} caption={caption} />)}
+        <a class="more__less" href={`#${note.id}`}>Show less ↑</a>
+      </details>
+    )}
+    {footnotes && <Fragment set:html={footnotes} />}
+  </div>
+
+  {!full && (
+    <p class="note__meta">
+      <a href={`#${note.id}`} aria-label="Link to this note">#</a>
+      {tags.map((t) => <><i>·</i><a href={tagHref(t)}>{t}</a></>)}
+      <i>·</i><a href={href}>Open ↗</a>
+    </p>
+  )}
+</article>
+
+<script>
+  // "Show less" closes the note again and brings its top back into view.
+  document.addEventListener('click', (e) => {
+    const link = (e.target as Element).closest('.more__less');
+    if (!link) return;
+    e.preventDefault();
+    const details = link.closest('details');
+    if (details) details.open = false;
+    link.closest('.note')?.scrollIntoView({ block: 'start' });
+  });
+</script>
+
+<style>
+  .note { margin: 0 0 72px; scroll-margin-top: 24px; }
+  .note__head { display: flex; justify-content: space-between; align-items: baseline; gap: 28px; margin: 0 0 10px; }
+  .note__title { margin: 0; font-weight: 400; font-size: 24px; line-height: 1.25; text-wrap: balance; }
+  .note__title a:hover { box-shadow: inset 0 -1px 0 rgba(27, 47, 158, 0.45); }
+  .note--full .note__title { font-weight: 300; font-size: clamp(36px, 4vw, 48px); line-height: 1.08; letter-spacing: -0.01em; }
+  .note__date { flex-shrink: 0; font-style: italic; font-weight: 300; font-size: 16px; color: var(--quick); white-space: nowrap; }
+
+  .note__body { font-size: 19px; line-height: 1.63; color: var(--text); text-wrap: pretty; }
+  .note__body :global(p) { margin: 0 0 18px; }
+  .note__body > :global(:last-child), .note__body :global(details > :last-child) { margin-bottom: 0; }
+  .note__body :global(strong) { font-weight: 500; }
+  .note__body :global(a) { box-shadow: inset 0 -1px 0 rgba(27, 47, 158, 0.45); }
+  .note__body :global(a:hover) { box-shadow: inset 0 -2px 0 var(--ink); }
+  .note__body :global(ul) { margin: 0 0 18px; padding-left: 26px; list-style: none; }
+  .note__body :global(ul > li) { position: relative; margin-bottom: 8px; }
+  .note__body :global(ul > li)::before { content: '–'; position: absolute; left: -26px; color: var(--quick); }
+
+  /* footnotes, kept small and grey under the note */
+  .note__body :global(.footnotes) { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 15px; line-height: 1.5; color: var(--quick); }
+  .note__body :global(.footnotes h2) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .note__body :global(.footnotes ol) { margin: 0; padding-left: 20px; }
+  .note__body :global(.footnotes p) { margin: 0; }
+  .note__body :global(sup a) { box-shadow: none; font-family: var(--mono); font-size: 11px; padding: 0 1px; }
+  .note__body :global(.data-footnote-backref) { box-shadow: none; }
+
+  /* the fold */
+  .more > summary {
+    position: relative; display: inline-block; margin-top: 2px; padding: 4px 0;
+    list-style: none; cursor: pointer;
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.02em; color: var(--ink);
+  }
+  .more > summary::-webkit-details-marker { display: none; }
+  .more > summary span { color: var(--quick); }
+  .more > summary:hover { box-shadow: inset 0 -1px 0 var(--ink); }
+  .more:not([open]) > summary::before {
+    content: ''; position: absolute; left: 0; width: min(640px, 90vw); bottom: calc(100% + 18px); height: 62px;
+    background: linear-gradient(rgba(250, 247, 240, 0), var(--bg)); pointer-events: none;
+  }
+  .more[open] > summary { display: none; }
+  .more__less { display: inline-block; margin-top: 4px; font-family: var(--mono); font-size: 12.5px; box-shadow: none !important; }
+
+  .note__meta { margin: 14px 0 0; font-family: var(--mono); font-size: 12px; line-height: 20px; letter-spacing: 0.02em; color: var(--quick); }
+  .note__meta a { padding: 12px 0; }
+  .note__meta a:hover { color: var(--ink); }
+  .note__meta i { font-style: normal; opacity: 0.55; padding: 0 8px; }
+</style>

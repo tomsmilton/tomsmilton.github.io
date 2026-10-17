@@ -1,0 +1,47 @@
+---
+// A single quick note on its own page.
+import Base from '../../layouts/Base.astro';
+import NoteEntry from '../../components/notes/NoteEntry.astro';
+import { getNotes, noteHref, tagHref, type Note } from '../../lib/notes';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map((note, i) => ({ params: { slug: note.id }, props: { note, newer: notes[i - 1], older: notes[i + 1] } }));
+}
+
+interface Props { note: Note; newer?: Note; older?: Note }
+const { note, newer, older } = Astro.props;
+const title = note.data.title ?? 'A note';
+const short = title.length > 28 ? title.slice(0, 26).trimEnd() + '…' : title;
+const label = (n: Note) => n.data.title ?? 'A note';
+---
+<Base title={title} crumbs={[{ label: 'notes', href: '/notes/' }, { label: short }]} description={`A quick note by Thomas Milton: ${title}.`}>
+  <main class="one">
+    <p class="kicker mono"><a href="/notes/">Quick notes</a></p>
+    <NoteEntry note={note} full />
+    {note.data.tags.length > 0 && (
+      <p class="tags mono">Filed under {note.data.tags.map((t, i) => <>{i > 0 && ', '}<a href={tagHref(t)}>{t}</a></>)}</p>
+    )}
+    <nav class="pager mono" aria-label="More notes">
+      {older ? <a href={noteHref(older)}>← {label(older)}</a> : <span />}
+      {newer ? <a class="pager__next" href={noteHref(newer)}>{label(newer)} →</a> : <span />}
+    </nav>
+    <p class="back mono"><a href="/notes/">All quick notes</a> · <a href="/writing/">Longer pieces → Writing</a></p>
+  </main>
+</Base>
+
+<style>
+  .one { max-width: 760px; margin: 0 auto; padding: 56px var(--gutter) 96px; }
+  .kicker { margin: 0 0 18px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--quick); }
+  .kicker a:hover { color: var(--ink); }
+  .one :global(.note) { margin-bottom: 28px; }
+  .one :global(.note__head) { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 26px; }
+  .one :global(.note__body) { font-size: 20px; }
+  .tags { margin: 0; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--quick); }
+  .tags a { color: var(--ink); }
+  .pager { display: flex; justify-content: space-between; gap: 24px; margin-top: 40px; font-size: 13px; }
+  .pager a { max-width: 48%; }
+  .pager__next { text-align: right; }
+  .back { margin-top: 28px; font-size: 12px; color: var(--quick); }
+  .back a:hover, .pager a:hover { text-decoration: underline; text-underline-offset: 3px; }
+</style>

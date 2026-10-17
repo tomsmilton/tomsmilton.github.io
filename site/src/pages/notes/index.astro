@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import NotesHeader from '../../components/notes/NotesHeader.astro';
+import NoteEntry from '../../components/notes/NoteEntry.astro';
+import NotesAside from '../../components/notes/NotesAside.astro';
+import { getNotes, monthId, monthLabel } from '../../lib/notes';
+
+const notes = await getNotes();
+// Mark the first note of each month, for the month rules in the feed.
+const firstOfMonth = new Set(notes.filter((n, i) => i === 0 || monthId(notes[i - 1].data.date) !== monthId(n.data.date)).map((n) => n.id));
+---
+<Base title="Quick notes" crumbs={[{ label: 'notes' }]} description="Quick notes by Thomas Milton: short things, ideas and anecdotes, newest first.">
+  <main class="notes">
+    <NotesHeader />
+    <div class="notes__grid">
+      <div class="notes__feed">
+        {notes.map((note) => (
+          <>
+            {firstOfMonth.has(note.id) && <h2 class="month" id={monthId(note.data.date)}>{monthLabel(note.data.date)}</h2>}
+            <NoteEntry note={note} />
+          </>
+        ))}
+        <p class="end">That's everything, back to {monthLabel(notes.at(-1)!.data.date)}. The longer pieces live in <a class="link" href="/writing/">Writing</a>.</p>
+      </div>
+      <NotesAside notes={notes} />
+    </div>
+  </main>
+</Base>
+
+<style>
+  .notes { max-width: 1120px; margin: 0 auto; padding: 40px var(--gutter) 96px; }
+  .notes__grid { display: grid; gap: 56px; margin-top: 0; }
+  .notes__feed { max-width: 640px; padding-top: 30px; }
+  .month {
+    display: flex; align-items: center; gap: 18px; margin: 0 0 36px; scroll-margin-top: 24px;
+    font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--quick);
+  }
+  .month::after { content: ''; flex: 1; height: 1px; background: rgba(112, 110, 106, 0.28); }
+  .notes__feed > .note + .month { margin-top: 8px; }
+  .end { margin: 0; padding-top: 22px; border-top: 1px solid var(--rule); font-style: italic; font-size: 17px; color: var(--text); }
+
+  /* phones: the facts and lists follow the feed */
+  @media (max-width: 1079px) {
+    .notes__grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (min-width: 1080px) {
+    .notes { padding-top: 64px; }
+    .notes__grid { grid-template-columns: minmax(0, 640px) 280px; justify-content: space-between; gap: 80px; }
+    .notes__grid :global(.aside) { padding-top: 0; }
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+// The sidebar, after Jeff Kaufman's: a small table of facts, then topics and months.
+import { site } from '../../site.config';
+import { tagCounts, tagHref, monthId, monthLabel, type Note } from '../../lib/notes';
+
+interface Props { notes: Note[] }
+const { notes } = Astro.props;
+const months = [...new Map(notes.map((n) => [monthId(n.data.date), monthLabel(n.data.date)]))];
+const monthCount = (id: string) => notes.filter((n) => monthId(n.data.date) === id).length;
+const oldest = notes.at(-1)?.data.date;
+---
+<aside class="aside" aria-label="About these notes">
+  <dl class="facts">
+    <div><dt>Notes</dt><dd>this page</dd></div>
+    <div><dt>Longer</dt><dd><a href="/writing/">Writing →</a></dd></div>
+    <div><dt>Essays on</dt><dd><a class="substack" href={site.substack.url}>Substack ↗</a></dd></div>
+    <div><dt>Elsewhere</dt><dd><a href={site.x}>X</a>, <a href={site.linkedin}>LinkedIn</a></dd></div>
+    <div><dt>Lives</dt><dd>Sheffield</dd></div>
+  </dl>
+
+  <div class="list">
+    <h2>Topics</h2>
+    <ul>
+      {tagCounts(notes).map(([t, n]) => <li><a href={tagHref(t)}>{t}</a><span>{n}</span></li>)}
+    </ul>
+  </div>
+
+  <div class="list">
+    <h2>Months</h2>
+    <ul>
+      {months.map(([id, label]) => <li><a href={`/notes/#${id}`}>{label}</a><span>{monthCount(id)}</span></li>)}
+    </ul>
+  </div>
+
+  {oldest && <p class="tally mono">All {notes.length} notes, going back to {monthLabel(oldest)}.</p>}
+</aside>
+
+<style>
+  .facts { margin: 0; }
+  .facts > div { display: grid; grid-template-columns: 104px 1fr; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--rule); }
+  .facts dt { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(27, 47, 158, 0.62); }
+  .facts dd { margin: 0; font-size: 17px; font-weight: 300; color: var(--text); }
+  .facts dd a { color: var(--ink); font-weight: 400; }
+  .facts dd a.substack { color: var(--substack); }
+  .facts dd a:hover { box-shadow: inset 0 -1px 0 currentColor; }
+
+  .list { margin-top: 40px; }
+  .list h2 { margin: 0 0 6px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); font-weight: 400; font-size: 19px; }
+  .list ul { margin: 0; padding: 0; list-style: none; }
+  .list li { display: flex; justify-content: space-between; align-items: baseline; }
+  .list a { padding: 5px 0; font-size: 17px; line-height: 1.3; }
+  .list a:hover { text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 4px; }
+  .list span { font-family: var(--mono); font-size: 12px; color: var(--quick); }
+  .tally { margin: 22px 0 0; font-size: 12px; line-height: 1.6; color: var(--quick); }
+</style>

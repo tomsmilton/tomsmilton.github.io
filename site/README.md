@@ -45,6 +45,27 @@ That fetches every public post and rewrites the snapshot. Commit the result. Run
 - images are downloaded into `public/substack/<slug>/`
 - a figure can be replaced with hand-made HTML through `figureOverrides` (the AI-verification table lives in `scripts/overrides/`)
 
+## Quick notes
+
+Short notes live at `/notes/`, one Markdown file each in `src/content/notes/`. To add one, create `src/content/notes/<slug>.md`:
+
+```md
+---
+title: "Train desk"          # optional
+date: 2026-10-06
+tags: ["sheffield"]          # each tag gets a page at /notes/topic/<tag>/
+image: "./images/photo.jpg"  # optional, kept in src/content/notes/images/
+imageAlt: "What the photo shows"
+caption: "Shown under the photo"
+---
+
+The note itself, in Markdown. Footnotes work too.[^1]
+
+[^1]: Like this.
+```
+
+Notes are newest first; `order:` sorts notes from the same day. In the feed, a note longer than three blocks shows its first two and folds the rest behind "Continue reading". Every note also has its own page at `/notes/<slug>/`.
+
 ## Before going live
 
 - **Address.** `astro.config.mjs` assumes `https://tsmilton.com`. For a custom domain, also add a `public/CNAME` file containing `tsmilton.com` and point the domain's DNS at GitHub Pages. If it lives at `https://<user>.github.io/<repo>/` instead, set `site` to `https://<user>.github.io` and `base` to `'/<repo>'`.
