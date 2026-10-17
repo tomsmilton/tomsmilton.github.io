@@ -66,14 +66,18 @@ The note itself, in Markdown. Footnotes work too.[^1]
 
 Notes are newest first; `order:` sorts notes from the same day. In the feed, a note longer than three blocks shows its first two and folds the rest behind "Continue reading". Every note also has its own page at `/notes/<slug>/`.
 
-## Before going live
-
-- **Address.** `astro.config.mjs` assumes `https://tsmilton.com`. For a custom domain, also add a `public/CNAME` file containing `tsmilton.com` and point the domain's DNS at GitHub Pages. If it lives at `https://<user>.github.io/<repo>/` instead, set `site` to `https://<user>.github.io` and `base` to `'/<repo>'`.
-
 ## Deploying
 
-This site lives in `site/` in the [tomsmilton.github.io](https://github.com/tomsmilton/tomsmilton.github.io) repo, on the branch `october-26-revamp`. The repo's root still holds the old site, which `main` serves at tsmilton.com.
+Every push to `main` deploys to [tsmilton.com](https://tsmilton.com) via `.github/workflows/deploy.yml` at the repo root: it checks out the repo (with submodules), builds this folder with Astro, and publishes `dist/` to GitHub Pages. Pages is set to deploy from **GitHub Actions** (Settings → Pages), and the custom domain `tsmilton.com` is configured there; `public/CNAME` is kept for reference.
 
-The workflow is at `../.github/workflows/deploy.yml`. It builds `site/` and publishes it on each push to `main`, so it does nothing on this branch. Before merging, decide how the old site is served (for example, at `/old/`). Then, in the repository, go to Settings → Pages and set Source to **GitHub Actions**: today the repo uses the old branch-based Pages.
+## The old site
 
-If you'd rather make `site/` the repository on its own, move the workflow into `site/.github/workflows/` and delete the `path: site` line.
+The previous tsmilton.com lives unchanged in `public/old/` and is published as-is at [tsmilton.com/old/](https://tsmilton.com/old/). Its stylesheet, `public/old/tufte-css`, is a git submodule, so after cloning run:
+
+```sh
+git submodule update --init
+```
+
+The old page URLs (`/widgets.html`, `/scrapbook.html`, `/outdoor_hottakes.html`) redirect to their `/old/` copies, and old idea links like `tsmilton.com/#melatonin` are sent on to the matching quick note by a few lines on the homepage.
+
+Other `tsmilton.com/<name>/` paths (e.g. `/widgets_dev/`, `/amodo/`) are separate repos with their own GitHub Pages sites and are unaffected by this one.

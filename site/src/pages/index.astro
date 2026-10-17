@@ -38,6 +38,17 @@ const [latest] = await getPosts();
       </a>
     )}
   </main>
+  <script is:inline>
+    // Links to ideas on the old homepage (tsmilton.com/#melatonin) now go to the matching quick note.
+    (function () {
+      var ideas = { anecdotes: 'anecdotes-and-ideas', 'woodlawn-wanderer': 'woodlawn-wanderer', 'nasa-reports': 'nasa-reports',
+        'consultancy-vc': 'consultancy-vc', 'devolved-authority': 'devolved-authority', 'sheffield-projects': 'sheffield-projects',
+        'phone-masts': 'phone-masts', melatonin: 'melatonin', microgrants: 'microgrants', 'funding-mechanisms': 'funding-mechanisms',
+        baguettes: 'baguettes', sevres: 'post-singularity-sidewalk', F1: 'f1-engineering-pace', more: '' };
+      var id = decodeURIComponent(location.hash.slice(1));
+      if (id in ideas) location.replace('/notes/' + (ideas[id] ? ideas[id] + '/' : ''));
+    })();
+  </script>
 </Base>
 
 <style>

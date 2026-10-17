@@ -1,5 +1,6 @@
-# Builds the Astro site in site/ and publishes it to GitHub Pages on every push to main.
-# One-off setup on GitHub: Settings → Pages → Source: "GitHub Actions".
+# Builds the Astro site in site/ and publishes it to GitHub Pages (tsmilton.com) on every push to main.
+# The old site is plain HTML in site/public/old/, published as-is at /old/; its tufte-css is a submodule.
+# One-off setup on GitHub: Settings → Pages → Source: "GitHub Actions" (done 17 Oct 2026).
 name: Deploy site to GitHub Pages
 
 on:
@@ -21,6 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          submodules: true
       - uses: withastro/action@v6
         with:
           path: site

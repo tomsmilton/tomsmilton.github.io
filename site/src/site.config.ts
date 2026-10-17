@@ -9,7 +9,7 @@ export const site = {
   x: 'https://x.com/tsmilton_amodo',
   linkedin: 'https://www.linkedin.com/in/tsmilton/',
   // The previous site, linked top right. TODO: point at wherever the old site ends up being served.
-  oldSite: '#',
+  oldSite: '/old/',
 
   // Which posts render natively is set in src/data/substack.config.json (used by `npm run sync`).
   substack: { url: substack.publication, native: substack.native },
