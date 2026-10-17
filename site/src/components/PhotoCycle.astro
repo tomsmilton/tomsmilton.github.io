@@ -1,0 +1,72 @@
+---
+// Four portrait film photographs, crossfading slowly (12s each, 48s loop).
+import { Image } from 'astro:assets';
+import tennis from '../assets/photos/tennis.jpg';
+import plywood from '../assets/photos/plywood.jpg';
+import chocolate from '../assets/photos/chocolate.jpg';
+import pink from '../assets/photos/pink-tshirt.jpg';
+
+interface Props { sizes: string; class?: string }
+const { sizes, class: className } = Astro.props;
+
+// caption: shown with each photo (in a box on phones, under the photo on desktop).
+const photos = [
+  { src: tennis, alt: 'Film photograph: a tennis player mid-swing, blurred with movement', caption: 'Tennis at the Smart’s' },
+  { src: plywood, alt: 'Film photograph: Toby building a plywood speaker in a workshop', caption: 'Toby building a speaker' },
+  { src: chocolate, alt: 'Film photograph: a woman eating chocolate on a clifftop above the sea in Cornwall', caption: 'A Cornwall walk' },
+  { src: pink, alt: 'Film photograph: Sam, in a pink T-shirt, working inside a server with a Wera screwdriver', caption: 'Sam using a Wera' },
+];
+const period = 12;
+---
+<div class:list={['cycle', className]} style={`--cycle:${period * photos.length}s`}>
+  {photos.map((p, i) => (
+    <figure class="cycle__frame" style={`animation-delay:${i * period - 3}s`}>
+      <Image src={p.src} alt={p.alt} widths={[400, 600, 900, 1200]} sizes={sizes} loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
+      <figcaption class="cycle__cap"><b>{i + 1}/{photos.length}</b>{p.caption}</figcaption>
+    </figure>
+  ))}
+</div>
+
+<style>
+  .cycle {
+    position: relative;
+    overflow: hidden;
+    background: var(--frame);
+  }
+  .cycle__frame {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    animation: show var(--cycle) ease-in-out infinite both;
+  }
+  .cycle__frame :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .cycle__cap {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 5px 10px 6px;
+    background: var(--bg);
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.2;
+  }
+  .cycle__cap b { font-family: var(--mono); font-style: normal; font-weight: 400; font-size: 10px; letter-spacing: 0.06em; opacity: 0.7; }
+
+  /* hold 12s, fade 2.5s, over a 48s loop (4 photos). If the number of photos changes, rescale these:
+     2.5s, 12s and 14.5s as a percentage of 12s × photos. */
+  @keyframes show {
+    0% { opacity: 0; }
+    5.21% { opacity: 1; }
+    25% { opacity: 1; }
+    30.21% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cycle__frame { animation: none; }
+    .cycle__frame:first-child { opacity: 1; }
+  }
+</style>

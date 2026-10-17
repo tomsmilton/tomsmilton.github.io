@@ -1,0 +1,138 @@
+---
+import Base from '../../layouts/Base.astro';
+import { Image } from 'astro:assets';
+import boy from '../../assets/author-skates.png';
+import { getPosts, postHref, isExternal, formatDate, readingMinutes, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts
+    .filter((p) => p.data.native)
+    .map((post) => {
+      const i = posts.indexOf(post);
+      return { params: { slug: post.id }, props: { post, newer: posts[i - 1], older: posts[i + 1] } };
+    });
+}
+
+interface Props { post: Post; newer?: Post; older?: Post }
+const { post, newer, older } = Astro.props;
+const { title, subtitle, date, url, bylines, body } = post.data;
+const mins = readingMinutes(post);
+const shortCrumb = title.length > 28 ? title.slice(0, 26).trimEnd() + '…' : title;
+---
+<Base title={title} description={subtitle || title} crumbs={[{ label: 'writing', href: '/writing/' }, { label: shortCrumb }]}>
+  <Fragment slot="head">
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content={date.toISOString()} />
+  </Fragment>
+  <main class="post">
+    <header class="post__head">
+      <p class="label">Essay · {formatDate(date)}{mins && ` · ${mins} min`} · Cross-posted from Substack</p>
+      <h1>{title}</h1>
+      {subtitle && <p class="standfirst">{subtitle}</p>}
+      <p class="byline mono">
+        <span>By {bylines.length ? bylines.join(' · ') : 'Thomas Milton'}</span>
+        <a class="link" href={url}>Originally on Substack ↗</a>
+      </p>
+    </header>
+
+    <article class="prose" set:html={body} />
+
+    <footer class="signoff">
+      <div class="signoff__author">
+        <Image class="signoff__boy" src={boy} alt="Thomas as a boy on inline skates, about 2006" widths={[120, 240]} sizes="120px" format="webp" />
+        <div>
+          <p class="signoff__note">← the author</p>
+          <p class="signoff__text">Thomas Milton runs Amodo, an R&amp;D company in Sheffield working on AI verification. <a class="link" href={url}>Read it on Substack ↗</a></p>
+        </div>
+      </div>
+      <nav class="pager mono" aria-label="More writing">
+        {older ? <a class:list={[{ substack: isExternal(older) }]} href={postHref(older)}>← {older.data.title}{isExternal(older) && ' ↗'}</a> : <span />}
+        {newer ? <a class:list={['pager__next', { substack: isExternal(newer) }]} href={postHref(newer)}>{newer.data.title}{isExternal(newer) && ' ↗'} →</a> : <span />}
+      </nav>
+    </footer>
+  </main>
+</Base>
+
+<style>
+  .post { max-width: var(--max); margin: 0 auto; padding: 34px 20px 64px; }
+  .post__head { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; max-width: 860px; }
+  .post__head .label { margin: 0; font-size: 11px; }
+  h1 { margin: 0; font-weight: 300; font-size: clamp(38px, 4.5vw, 64px); line-height: 1.03; letter-spacing: -0.01em; }
+  .standfirst { margin: 0; font-size: clamp(19px, 1.7vw, 24px); font-style: italic; font-weight: 300; line-height: 1.4; color: var(--text); }
+  .byline { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 4px 0 0; font-size: 12px; }
+
+  /* ---- the article body (HTML synced from Substack) ---- */
+  .prose { max-width: 640px; color: var(--text); font-size: 18px; line-height: 1.6; }
+  .prose :global(p) { margin: 0 0 20px; }
+  .prose :global(h2), .prose :global(h3) { margin: 46px 0 14px; font-weight: 400; font-size: clamp(26px, 2.3vw, 32px); line-height: 1.15; color: var(--ink); }
+  .prose :global(h4) { margin: 30px 0 10px; font-weight: 400; font-style: italic; font-size: clamp(21px, 1.8vw, 24px); line-height: 1.2; color: var(--ink); }
+  .prose :global(p > strong:only-child) { color: var(--ink); font-weight: 500; }
+  .prose :global(ul), .prose :global(ol) { margin: 0 0 22px; padding-left: 24px; }
+  .prose :global(ul) { list-style: none; padding-left: 0; }
+  .prose :global(ul > li) { position: relative; padding-left: 24px; }
+  .prose :global(ul > li)::before { content: '–'; position: absolute; left: 2px; color: var(--ink); }
+  .prose :global(li) { margin-bottom: 10px; }
+  .prose :global(li > p) { margin: 0; }
+  .prose :global(blockquote) { margin: 4px 0 22px; padding-left: 28px; font-style: italic; color: var(--ink); }
+  .prose :global(blockquote p) { margin: 0 0 10px; }
+  .prose :global(hr) { border: 0; border-top: 1px solid var(--rule); margin: 36px 0; }
+  .prose :global(figure) { margin: 12px 0 34px; }
+  .prose :global(figcaption) { margin-top: 10px; font-size: 14px; font-style: italic; color: var(--muted); }
+
+  /* footnotes as sidenotes */
+  .prose :global(.fn-ref) { font-family: var(--mono); font-size: 11px; line-height: 0; margin-left: 2px; color: var(--ink); }
+  .prose :global(.sidenote) { display: block; margin: 10px 0 4px; padding-left: 14px; font-size: 15px; line-height: 1.45; font-style: italic; }
+  .prose :global(.sidenote sup) { font-family: var(--mono); font-size: 11px; font-style: normal; }
+
+  /* embedded post card */
+  .prose :global(.embed a) { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 28px; padding: 18px 20px; border: 1px solid var(--rule-strong); box-shadow: none; color: var(--ink); transition: border-color 0.2s; }
+  .prose :global(.embed a:hover) { border-color: var(--ink); box-shadow: none; }
+  .prose :global(.embed-pub) { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .prose :global(.embed strong) { font-weight: 400; font-size: 21px; line-height: 1.25; }
+  .prose :global(.embed-text) { font-size: 15px; line-height: 1.45; color: var(--text); }
+  .prose :global(.embed-cta) { font-family: var(--mono); font-size: 12px; }
+
+  /* the specification table (stacks on phones) */
+  .prose :global(table.spec) { width: 100%; border-collapse: collapse; color: var(--ink); }
+  .prose :global(.spec thead) { display: none; }
+  .prose :global(.spec tr) { display: block; padding: 16px 0; border-top: 1px solid var(--rule); }
+  .prose :global(.spec th), .prose :global(.spec td) { display: block; text-align: left; padding: 0; }
+  .prose :global(.spec th[scope='row']) { font-weight: 500; font-size: 19px; }
+  .prose :global(.spec small) { display: block; font-weight: 400; font-style: italic; font-size: 14px; opacity: 0.75; }
+  .prose :global(.spec td) { margin-top: 8px; font-size: 16px; line-height: 1.5; color: var(--text); }
+  .prose :global(.spec q) { display: block; font-style: italic; font-size: 17px; line-height: 1.35; color: var(--ink); quotes: '“' '”'; }
+  .prose :global(.spec td span) { display: block; margin-top: 6px; font-size: 15px; line-height: 1.45; opacity: 0.85; }
+
+  .signoff { max-width: 640px; margin-top: 46px; }
+  .signoff__author { display: flex; align-items: flex-end; gap: 22px; padding-top: 26px; border-top: 1px solid var(--ink); }
+  :global(.signoff__boy) { width: auto; height: 120px; filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff); }
+  .signoff__note { margin: 0 0 8px; font-family: var(--hand); font-weight: 600; font-size: 28px; line-height: 0.9; transform: rotate(-4deg); transform-origin: left bottom; }
+  .signoff__text { margin: 0; font-size: 16px; line-height: 1.45; color: var(--text); }
+  .pager { display: flex; justify-content: space-between; gap: 24px; margin-top: 34px; font-size: 13px; }
+  .pager a { max-width: 48%; }
+  .pager__next { text-align: right; }
+
+  @media (min-width: 760px) {
+    .post { padding: 72px var(--gutter) 80px; }
+    .prose { font-size: 20px; line-height: 1.62; }
+  }
+
+  @media (min-width: 1180px) {
+    .post { padding-left: max(var(--gutter), calc((100% - 1280px) / 2 + 160px)); }
+    .post__head { margin-bottom: 52px; }
+    .prose :global(.sidenote) {
+      float: right; clear: right;
+      width: 280px; margin: 4px -340px 16px 0; padding: 0;
+      font-style: normal;
+    }
+    .prose :global(figure.wide) { width: 980px; }
+    .prose :global(.spec thead) { display: table-header-group; }
+    .prose :global(.spec thead th) { padding: 0 0 10px; border-bottom: 1px solid var(--ink); font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; }
+    .prose :global(.spec tr) { display: table-row; padding: 0; }
+    .prose :global(.spec th), .prose :global(.spec td) { display: table-cell; vertical-align: top; padding: 18px 26px 22px 0; border-top: 1px solid var(--rule); }
+    .prose :global(.spec th[scope='row']) { width: 210px; }
+    .prose :global(.spec td:last-child) { width: 330px; padding-right: 0; }
+    .prose :global(.spec td) { margin-top: 0; }
+  }
+</style>

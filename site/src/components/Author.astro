@@ -1,0 +1,41 @@
+---
+// The author, c. 2006: the rollerblade cut-out with a handwritten note and arrow.
+import { Image } from 'astro:assets';
+import boy from '../assets/author-skates.png';
+
+interface Props { sizes: string; class?: string; note?: string }
+const { sizes, class: className, note = '(me, c. 2006)' } = Astro.props;
+---
+<div class:list={['author', className]}>
+  <p class="author__note"><span class="author__line1">the author</span><span class="author__line2">{note}</span></p>
+  <!-- down to the helmet (wide screens) -->
+  <svg class="author__arrow author__arrow--down" viewBox="0 0 90 74" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 4 C 14 10, 20 22, 30 30 C 40 38, 50 44, 58 58 C 60 61, 61 63, 62 66" />
+    <path d="M62 66 C 58 62, 54 61, 49 60" />
+    <path d="M62 66 C 63 60, 63 56, 62 51" />
+  </svg>
+  <!-- across to the skates (phones) -->
+  <svg class="author__arrow author__arrow--across" viewBox="0 0 126 30" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 18 C 36 28, 84 24, 122 12" />
+    <path d="M122 12 L111 9.5" />
+    <path d="M122 12 L114.5 20" />
+  </svg>
+  <Image class="author__boy" src={boy} alt="Thomas as a boy on inline skates, holding a basketball, about 2006" widths={[240, 480, 720]} sizes={sizes} format="webp" quality={88} loading="eager" />
+</div>
+
+<style>
+  .author { position: relative; }
+  .author__note {
+    position: absolute;
+    margin: 0;
+    font-family: var(--hand);
+    line-height: 0.95;
+    white-space: nowrap;
+    transform: rotate(-7deg);
+    transform-origin: left bottom;
+  }
+  .author__line1 { display: block; font-weight: 600; font-size: var(--note-size, 38px); }
+  .author__line2 { display: block; font-weight: 500; font-size: calc(var(--note-size, 38px) * 0.6); margin-left: 0.8em; }
+  .author__arrow { position: absolute; overflow: visible; }
+  :global(.author__boy) { position: absolute; width: auto; }
+</style>

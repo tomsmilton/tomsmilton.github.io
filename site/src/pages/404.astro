@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Not found" crumbs={[{ label: '404' }]}>
+  <main class="nf">
+    <h1>Not here.</h1>
+    <p>That page doesn’t exist, or it moved. Try the <a class="link" href="/">front door</a> or the <a class="link" href="/writing/">writing</a>.</p>
+  </main>
+</Base>
+
+<style>
+  .nf { max-width: var(--max); margin: 0 auto; padding: 72px var(--gutter) 140px; min-height: 60vh; }
+  h1 { margin: 0 0 24px; font-weight: 200; font-size: clamp(64px, 11vw, 160px); line-height: 0.95; letter-spacing: -0.02em; }
+  p { max-width: 32em; font-size: 21px; line-height: 1.5; color: var(--text); }
+</style>

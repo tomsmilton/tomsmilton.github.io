@@ -1,0 +1,146 @@
+---
+import Base from '../layouts/Base.astro';
+import PhotoCycle from '../components/PhotoCycle.astro';
+import Author from '../components/Author.astro';
+import { site } from '../site.config';
+import { getPosts, postHref, isExternal } from '../lib/posts';
+
+const [latest] = await getPosts();
+---
+<Base crumbs={[{ label: 'home' }]}>
+  <main class="home">
+    <div class="hero">
+      <PhotoCycle class="home__photos" sizes="(min-width: 980px) 470px, 100vw" />
+      <Author class="home__author" sizes="(min-width: 980px) 220px, 35vw" />
+    </div>
+
+    <h1 class="home__name">Thomas<br />Milton</h1>
+
+    <a class="home__cue" href="#index">
+      <span>Scroll</span>
+      <svg viewBox="0 0 16 22" width="16" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1 V20" /><path d="M2 14 L8 20 L14 14" /></svg>
+    </a>
+
+    <div class="home__foot" aria-hidden="true"></div>
+
+    <nav id="index" class="home__index" aria-label="Index">
+      <ol>
+        {site.index.map((item, i) => (
+          <li><a href={item.href}><span class="n">{String(i + 1).padStart(2, '0')}</span><span class="t">{item.label}</span><span class="ar" aria-hidden="true">→</span></a></li>
+        ))}
+      </ol>
+    </nav>
+
+    {latest && (
+      <a class="home__latest" href={postHref(latest)}>
+        <span class="label">Latest</span>
+        <span class="home__latest-title">{latest.data.title}<span aria-hidden="true">{isExternal(latest) ? ' ↗' : ' →'}</span></span>
+      </a>
+    )}
+  </main>
+</Base>
+
+<style>
+  /* ---------- phone first: "Phone A" ---------- */
+  .home {
+    container-type: inline-size;
+    max-width: 560px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .hero { position: relative; height: 139cqw; }
+  .hero :global(.home__photos) { position: absolute; left: 0; top: 0; width: 100%; height: 112.8cqw; }
+  .hero :global(.home__author) { position: absolute; inset: 0; --note-size: 7.2cqw; }
+  .hero :global(.author__boy) {
+    right: 6.2cqw; top: 46.2cqw; height: 87.2cqw;
+    filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(1.4px 1.4px 0 #fff) drop-shadow(-1.4px -1.4px 0 #fff);
+  }
+  .hero :global(.author__note) { left: 5.6cqw; top: 117.4cqw; transform: rotate(-5deg); }
+  .hero :global(.author__arrow--down) { display: none; }
+  .hero :global(.author__arrow--across) { left: 35.7cqw; top: 119.8cqw; width: 32.5cqw; height: 7.74cqw; }
+  .hero::after { content: ''; position: absolute; left: 5.1cqw; right: 5.1cqw; bottom: 0; border-top: 1px solid var(--ink); }
+
+  .home__name {
+    margin: 4.6cqw 5.1cqw 0;
+    font-weight: 200;
+    font-size: 20.5cqw;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+  }
+  .home__cue {
+    align-self: center;
+    margin: 6cqw 0 2cqw;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    min-height: 44px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  }
+  .home__cue svg { animation: bob 1.8s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
+
+  .home__foot { display: none; }
+  .home__latest {
+    order: 1;
+    margin: 26px 5.1cqw 0;
+    min-height: 64px;
+    padding: 12px 18px;
+    border: 1px solid var(--ink);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    transition: background 0.3s, color 0.3s;
+  }
+  .home__latest:hover { background: var(--ink); color: var(--bg); }
+  .home__latest-title { font-size: 19px; font-style: italic; font-weight: 300; line-height: 1.25; text-align: right; }
+  .home__index { order: 2; margin: 26px 5.1cqw 34px; scroll-margin-top: 16px; }
+  .home__index ol { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
+  .home__index a {
+    display: grid; grid-template-columns: 36px 1fr auto; align-items: baseline;
+    padding: 13px 0; border-top: 1px solid var(--rule);
+    font-size: 20px; transition: opacity 0.3s;
+  }
+  .home__index .n { font-family: var(--mono); font-size: 12px; opacity: 0.6; }
+  .home__index .ar { font-size: 16px; opacity: 0.5; }
+  .home__index ol:hover a { opacity: 0.35; }
+  .home__index ol a:hover { opacity: 1; }
+
+  /* ---------- wide screens: the desktop design ---------- */
+  @media (min-width: 980px) {
+    .home {
+      container-type: normal;
+      max-width: var(--max);
+      padding: clamp(28px, 4.5vh, 64px) var(--gutter) 0;
+      display: grid;
+      grid-template-columns: minmax(0, 470fr) minmax(0, 352fr) minmax(0, 458fr);
+      grid-template-rows: auto 1fr auto auto;
+      grid-template-areas:
+        'photo author name'
+        'photo author index'
+        'photo author latest'
+        'caption caption caption';
+    }
+    .hero { display: contents; }
+    .hero :global(.home__photos) { position: relative; grid-area: photo; height: auto; aspect-ratio: 470 / 696; }
+    .hero :global(.home__author) { position: relative; inset: auto; grid-area: author; --note-size: clamp(30px, 2.7vw, 38px); }
+    .hero :global(.author__boy) {
+      left: 18.75%; right: auto; top: auto; bottom: 0; height: 78.4%;
+      /* a pure white sticker edge, with a hairline so it shows against the warm white */
+      filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff)
+        drop-shadow(0 0 0.6px rgba(30, 34, 64, 0.35));
+    }
+    .hero :global(.author__note) { left: 10%; top: 4.9%; transform: rotate(-7deg); }
+    .hero :global(.author__arrow--down) { display: block; left: 25.6%; top: 13.2%; width: 25.5%; height: 10.6%; }
+    .hero :global(.author__arrow--across) { display: none; }
+    .hero::after { display: none; }
+    /* each photo's caption sits under it, in the ruled strip, and fades with its photo */
+    .hero :global(.home__photos) { overflow: visible; }
+    .hero :global(.cycle__cap) { top: calc(100% + 15px); bottom: auto; left: 0; padding: 0; background: none; font-size: 14px; color: var(--muted); }
+
+    .home__name { grid-area: name; margin: -12px 0 0; font-size: clamp(88px, 9.45vw, 136px); white-space: nowrap; }
+    .home__cue { display: none; }
+    .home__index { grid-area: index; order: 0; margin: 44px 0 0 8px; }
+    .home__index a { grid-template-columns: 44px 1fr; padding: 9px 0; font-size: 18px; }
+    .home__index .ar { display: none; }
+    .home__latest { grid-area: latest; order: 0; margin: 24px 0 14px 8px; min-height: 74px; padding: 12px 22px; }
+    .home__latest-title { font-size: 22px; }
+    .home__foot { display: block; grid-area: caption; height: 46px; border-top: 1px solid var(--ink); }
+  }
+</style>

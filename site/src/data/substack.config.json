@@ -1,0 +1,7 @@
+{
+  "publication": "https://tomsmilton.substack.com",
+  "native": ["the-uks-next-ai-bet-should-be"],
+  "figureOverrides": {
+    "the-uks-next-ai-bet-should-be": { "1": "scripts/overrides/ai-verification-table.html" }
+  }
+}

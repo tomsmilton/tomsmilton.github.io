@@ -1,0 +1,39 @@
+<figure class="wide">
+  <table class="spec">
+    <thead>
+      <tr><th>Technology</th><th>What it is</th><th>Example claims &amp; why they matter</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Recomputation</th>
+        <td>Computation can be redone on separate, hardened systems to check the original was done faithfully whilst supporting workload confidentiality. There are algorithms that allow parties to recompute parts of inference or training.</td>
+        <td><q>Training is proceeding according to agreed training code and data</q><span>Verifies that a model was not trained using training strategies that have been determined to be unsafe.</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Challenges<small>e.g. proof-of-memory</small></th>
+        <td>Techniques that spot-check the prover’s compute. For example, requesting a GPU to prove it has weights in its RAM can be part of a scheme where all memory is filled with the intended model weights.</td>
+        <td><q>The model being served on this compute is the specific model that passed certain evals</q><span>Verifies that the internal R&amp;D loop is being driven by an approved, eval-passed model rather than a newer uncertified one.</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Secure enclaves</th>
+        <td>Secure enclaves use hardware to cryptographically report the code and model that is being executed. Trusted Execution Environments are already used in some AI clusters; they’re not currently suitable for international coordination, but if brought up to standard they could play a role in verifying some rules.</td>
+        <td><q>X amount of flops were used in this training run</q><span>Secure enclaves could strengthen claims that a pacing rule is being followed in real time and with more granularity.</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Fingerprinting<small>analogue sensors, network traffic, component utilisation</small></th>
+        <td>Different workloads have different network traffic, power draws, memory access patterns, etc.</td>
+        <td><q>This training run is proceeding differently from earlier approved runs</q><span>Allows low-trust monitoring that flags anomalies for deeper verification by enclaves or recomputation.</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Hardware-enforced limits</th>
+        <td>Some verification systems aim to verify an agreement by directly “enforcing” it. If a scheme aimed to slow large-scale frontier training runs then it could be helpful to remove the high-bandwidth network.</td>
+        <td><q>This compute cannot perform pre-training efficiently</q><span>The goal is to increase the friction of performing non-allowed workloads.</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Zero-knowledge proofs (ZKPs)</th>
+        <td>ZKPs let a party prove a claim without sharing the underlying data. In the case of AI development, it is possible to prove that a specific model did a specific computation without revealing the model or data to the verifier. Using ZKPs for inference and training currently comes with a high computational overhead.</td>
+        <td><q>Training followed the agreed code</q><span>ZKPs give stronger evidence for verifiers, while keeping the model, data, and training details secret.</span></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

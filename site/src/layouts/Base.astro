@@ -1,0 +1,63 @@
+---
+import '@fontsource/spectral/200.css';
+import '@fontsource/spectral/300.css';
+import '@fontsource/spectral/400.css';
+import '@fontsource/spectral/500.css';
+import '@fontsource/spectral/300-italic.css';
+import '@fontsource/spectral/400-italic.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/caveat/500.css';
+import '@fontsource/caveat/600.css';
+import '../styles/global.css';
+import { site } from '../site.config';
+
+interface Crumb { label: string; href?: string }
+interface Props {
+  title?: string;
+  description?: string;
+  crumbs?: Crumb[];
+}
+
+const { title, description = site.description, crumbs = [{ label: 'home' }] } = Astro.props;
+const pageTitle = title ? `${title} · ${site.tag}` : `${site.name} · ${site.tag}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#faf7f0" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <slot name="head" />
+  </head>
+  <body>
+    <header class="bar">
+      <div class="bar__inner">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="/"><b>{site.tag}</b></a>
+          {crumbs.map((c) => (
+            <>
+              <span class="sep" aria-hidden="true">/</span>
+              {c.href ? <a href={c.href}>{c.label}</a> : <span class="here" aria-current="page">{c.label}</span>}
+            </>
+          ))}
+        </nav>
+        <nav class="social" aria-label="Elsewhere">
+          <a href={site.x}>X</a>
+          <a href={site.linkedin}>LinkedIn</a>
+          <a class="old" href={site.oldSite}>old website</a>
+        </nav>
+      </div>
+    </header>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,32 @@
+---
+// Placeholder pages for index sections that aren't built yet.
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config';
+
+export function getStaticPaths() {
+  return site.index
+    .filter((item) => item.href !== '/writing/')
+    .map((item) => ({ params: { section: item.href.replaceAll('/', '') }, props: { label: item.label } }));
+}
+
+const { label } = Astro.props;
+const about = label === 'About';
+---
+<Base title={label} crumbs={[{ label: label.toLowerCase() }]}>
+  <main class="stub">
+    <h1>{label}</h1>
+    {about ? (
+      <p>Thomas Milton runs Amodo, an R&amp;D company in Sheffield working on AI verification. He also makes small tools in the evenings, takes photographs on film, and <a class="link" href="/writing/">writes</a>.</p>
+    ) : (
+      <p>This page is being built. In the meantime, there’s <a class="link" href="/writing/">writing</a>.</p>
+    )}
+    <p class="back mono"><a class="link" href="/">← home</a></p>
+  </main>
+</Base>
+
+<style>
+  .stub { max-width: var(--max); margin: 0 auto; padding: 72px var(--gutter) 120px; min-height: 60vh; }
+  h1 { margin: 0 0 24px; font-weight: 200; font-size: clamp(64px, 11vw, 160px); line-height: 0.95; letter-spacing: -0.02em; }
+  p { max-width: 32em; font-size: 21px; line-height: 1.5; color: var(--text); }
+  .back { margin-top: 40px; font-size: 13px; }
+</style>

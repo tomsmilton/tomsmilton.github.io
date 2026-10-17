@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPosts, postHref, isExternal, formatDate } from '../../lib/posts';
+
+const [newest, ...earlier] = await getPosts();
+---
+<Base title="Writing" crumbs={[{ label: 'writing' }]} description="Writing by Thomas Milton, most of it first published on Substack.">
+  <main class="writing">
+    <div class="writing__grid">
+      {newest && (
+        <section class="feature" aria-labelledby="newest">
+          <p class="label">Newest · {formatDate(newest.data.date)}</p>
+          <h1 id="newest" class="feature__title"><a href={postHref(newest)}>{newest.data.title}{isExternal(newest) && <span class="ext substack" aria-label="(on Substack)"> ↗</span>}</a></h1>
+          {newest.data.subtitle && <p class="feature__sub">{newest.data.subtitle}</p>}
+          <a class:list={['feature__go mono', { substack: isExternal(newest) }]} href={postHref(newest)}>{isExternal(newest) ? 'Read on Substack ↗' : 'Read the essay →'}</a>
+        </section>
+      )}
+      <section class="earlier" aria-label="Earlier writing">
+        <div class="earlier__head">
+          <p class="label">Earlier</p>
+          <ul class="key mono" aria-label="Key">
+            <li class="substack">Substack ↗</li>
+            <li>Longform</li>
+            <li class="quick">Quick notes</li>
+          </ul>
+        </div>
+        <ol class="list">
+          {earlier.map((p) => (
+            <li>
+              <a class:list={[{ substack: isExternal(p) }]} href={postHref(p)}>
+                <span class="list__title">{p.data.title}{isExternal(p) && <span class="ext" aria-label="(on Substack)"> ↗</span>}</span>
+                <time class="list__date mono" datetime={p.data.date.toISOString()}>{formatDate(p.data.date, 'short')}</time>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+    <p class="bigword" aria-hidden="true">writing</p>
+  </main>
+</Base>
+
+<style>
+  /* At least one window tall, with "writing" sitting on the bottom edge, so the page only scrolls when the list needs it. */
+  .writing {
+    --big: clamp(140px, 29vw, 420px);
+    position: relative;
+    max-width: var(--max);
+    min-height: calc(100svh - 45px);
+    margin: 0 auto;
+    padding: 32px var(--gutter) calc(var(--big) * 0.7 + 32px);
+    overflow: hidden;
+  }
+  .writing__grid { display: grid; gap: 44px; }
+  .feature { display: flex; flex-direction: column; gap: 14px; }
+  .feature__title { margin: 0; font-weight: 300; font-size: clamp(38px, 4.2vw, 60px); line-height: 1.04; letter-spacing: -0.01em; }
+  .feature__sub { margin: 0; font-size: clamp(18px, 1.4vw, 20px); font-style: italic; line-height: 1.45; color: var(--text); max-width: 34em; }
+  .feature__go { align-self: flex-start; margin-top: 4px; font-size: 13px; padding-bottom: 2px; box-shadow: inset 0 -1px 0 currentColor; }
+
+  .earlier__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 24px; margin: 0 0 10px; }
+  .earlier__head .label { margin: 0; }
+  .key { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; padding: 0; list-style: none; font-size: 11px; letter-spacing: 0.04em; }
+  .key li { display: flex; align-items: center; gap: 7px; }
+  .key li::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .list { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
+  .list a {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+    padding: 12px 0; border-top: 1px solid var(--rule);
+    font-size: 19px; line-height: 1.3; transition: opacity 0.3s;
+  }
+  .list:hover a { opacity: 0.35; }
+  .list a:hover { opacity: 1; }
+  .ext { font-size: 0.8em; opacity: 0.7; }
+  .feature__title .ext { font-size: 0.4em; vertical-align: 1.05em; margin-left: 0.15em; }
+  .list__date { font-size: 12px; opacity: 0.65; white-space: nowrap; }
+
+  .bigword {
+    position: absolute;
+    left: calc(var(--gutter) - 0.04em);
+    bottom: -0.1em;
+    margin: 0;
+    font-weight: 200;
+    font-size: var(--big);
+    line-height: 0.78;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  @media (min-width: 980px) {
+    .writing { padding-top: 64px; }
+    .writing__grid { grid-template-columns: minmax(0, 560fr) minmax(0, 600fr); column-gap: 120px; }
+  }
+</style>
