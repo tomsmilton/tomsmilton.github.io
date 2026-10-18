@@ -4,8 +4,14 @@ import PhotoCycle from '../components/PhotoCycle.astro';
 import Author from '../components/Author.astro';
 import { site } from '../site.config';
 import { getPosts, postHref, isExternal } from '../lib/posts';
+import { getNotes, noteHref } from '../lib/notes';
 
-const [latest] = await getPosts();
+// "Latest" is whichever is newest: a piece of writing or a quick note.
+const [post] = await getPosts();
+const [note] = await getNotes();
+const latest = note && (!post || note.data.date >= post.data.date)
+  ? { title: note.data.title ?? 'A quick note', href: noteHref(note), external: false }
+  : post && { title: post.data.title, href: postHref(post), external: isExternal(post) };
 ---
 <Base crumbs={[{ label: 'home' }]}>
   <main class="home">
@@ -32,9 +38,9 @@ const [latest] = await getPosts();
     </nav>
 
     {latest && (
-      <a class="home__latest" href={postHref(latest)}>
+      <a class="home__latest" href={latest.href}>
         <span class="label">Latest</span>
-        <span class="home__latest-title">{latest.data.title}<span aria-hidden="true">{isExternal(latest) ? ' ↗' : ' →'}</span></span>
+        <span class="home__latest-title">{latest.title}<span aria-hidden="true">{latest.external ? ' ↗' : ' →'}</span></span>
       </a>
     )}
   </main>
