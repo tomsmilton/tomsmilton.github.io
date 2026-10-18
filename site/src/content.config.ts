@@ -29,6 +29,8 @@ const notes = defineCollection({
     image: image().optional(),
     imageAlt: z.string().optional(),
     caption: z.string().optional(),
+    // "google-doc" for notes published from the Quick notes doc by scripts/sync-quick-notes.mjs.
+    source: z.string().optional(),
   }),
 });
 

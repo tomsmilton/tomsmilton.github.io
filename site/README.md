@@ -66,6 +66,12 @@ The note itself, in Markdown. Footnotes work too.[^1]
 
 Notes are newest first; `order:` sorts notes from the same day. In the feed, a note longer than three blocks shows its first two and folds the rest behind "Continue reading". Every note also has its own page at `/notes/<slug>/`.
 
+### Publishing notes from the Google Doc
+
+The easier way: write the note as a sub-tab under **Drafts** in the *Quick notes* Google Doc, and when it's done, move the tab under **Complete**. A scheduled Claude session checks the doc, turns each finished tab into a note (the tab title is the note's title, the first image its figure), commits it and pushes to `main`, which deploys it. Its steps are in `.claude/skills/publish-quick-notes/SKILL.md`.
+
+The conversion is `scripts/sync-quick-notes.mjs`, which reads the doc's zipped HTML export (Drive → Download → Web page). Run it by hand with `node scripts/sync-quick-notes.mjs <export.zip>`. Notes it writes carry `source: "google-doc"`; it only ever rewrites those, so hand-written notes are safe. In the doc, a paragraph starting `Tags:`, `Caption:` or `Date:` sets that field instead of appearing in the note.
+
 ## Deploying
 
 Every push to `main` deploys to [tsmilton.com](https://tsmilton.com) via `.github/workflows/deploy.yml` at the repo root: it checks out the repo (with submodules), builds this folder with Astro, and publishes `dist/` to GitHub Pages. Pages is set to deploy from **GitHub Actions** (Settings → Pages), and the custom domain `tsmilton.com` is configured there; `public/CNAME` is kept for reference.
