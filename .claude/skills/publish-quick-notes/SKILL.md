@@ -21,7 +21,9 @@ their frontmatter; that is the posted log, so running this again never double-po
 1. **Start from the latest `main`.**
    `git fetch origin main && git checkout -B main origin/main`
 
-2. **Export the doc.** Call the Google Drive connector's `download_file_content` with
+2. **Export the doc.** Call the Google Drive connector's `download_file_content` tool (its
+   full name may be `mcp__Google_Drive__download_file_content` or carry an id in place of
+   `Google_Drive`; find it with ToolSearch "google drive download") with
    `fileId: "1DESAnnD-0V_CJwqlhVmCoSTKz6kabIQsNStKfb8EjSc"` and
    `exportMimeType: "application/zip"`. The zip holds every tab's text and images.
    - A large result is saved to a file and the tool tells you the path. Use that path.
