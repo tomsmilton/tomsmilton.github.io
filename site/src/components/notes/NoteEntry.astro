@@ -1,24 +1,24 @@
 ---
 // One quick note. In the feed, notes longer than a few blocks collapse after
 // the first two and open in place; on a note's own page it runs in full.
-import NoteFigure from './NoteFigure.astro';
+import NoteBlock from './NoteBlock.astro';
 import { formatDate } from '../../lib/posts';
-import { noteBody, noteHref, tagHref, type Note } from '../../lib/notes';
+import { noteBody, noteHref, tagHref, type Block, type Note } from '../../lib/notes';
 
 interface Props { note: Note; full?: boolean }
 const { note, full = false } = Astro.props;
-const { title, date, tags, image, imageAlt, caption } = note.data;
+const { title, date, tags, image, imageAlt, caption, imageStyle } = note.data;
 const { blocks, footnotes, words } = noteBody(note);
 
 // The photo (if any) sits after the first paragraph and counts as a block.
-type Item = { html: string } | { figure: true };
-const items: Item[] = blocks.map((html) => ({ html }));
+const items: (Block | { figure: true })[] = [...blocks];
 if (image) items.splice(1, 0, { figure: true });
 const collapse = !full && items.length > 3;
 const shown = collapse ? items.slice(0, 2) : items;
 const rest = collapse ? items.slice(2) : [];
 const href = noteHref(note);
 const Heading = full ? 'h1' : 'h2';
+const lead = image && { src: image, alt: imageAlt ?? '', caption, cutout: imageStyle === 'cutout' };
 ---
 <article class:list={['note', { 'note--full': full }]} id={note.id}>
   <header class="note__head">
@@ -29,11 +29,11 @@ const Heading = full ? 'h1' : 'h2';
   </header>
 
   <div class="note__body">
-    {shown.map((it) => 'html' in it ? <Fragment set:html={it.html} /> : <NoteFigure src={image!} alt={imageAlt ?? ''} caption={caption} />)}
+    {shown.map((it) => <NoteBlock block={it} lead={lead} />)}
     {collapse && (
       <details class="more">
         <summary>Continue reading ↓ <span>· {words.toLocaleString('en-GB')} words</span></summary>
-        {rest.map((it) => 'html' in it ? <Fragment set:html={it.html} /> : <NoteFigure src={image!} alt={imageAlt ?? ''} caption={caption} />)}
+        {rest.map((it) => <NoteBlock block={it} lead={lead} />)}
         <a class="more__less" href={`#${note.id}`}>Show less ↑</a>
       </details>
     )}
@@ -75,6 +75,7 @@ const Heading = full ? 'h1' : 'h2';
   .note__body :global(strong) { font-weight: 500; }
   .note__body :global(a) { box-shadow: inset 0 -1px 0 rgba(27, 47, 158, 0.45); }
   .note__body :global(a:hover) { box-shadow: inset 0 -2px 0 var(--ink); }
+  .note__body :global(hr) { height: 1px; margin: 30px 0; border: 0; background: var(--rule); }
   .note__body :global(ul) { margin: 0 0 18px; padding-left: 26px; list-style: none; }
   .note__body :global(ul > li) { position: relative; margin-bottom: 8px; }
   .note__body :global(ul > li)::before { content: '–'; position: absolute; left: -26px; color: var(--quick); }

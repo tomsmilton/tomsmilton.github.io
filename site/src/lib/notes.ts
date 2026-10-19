@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import * as cheerio from 'cheerio';
 
 export type Note = CollectionEntry<'notes'>;
@@ -22,16 +23,36 @@ export function tagCounts(notes: Note[]): [string, number][] {
   return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 }
 
+// Every image a note can use, so images inside the text can be optimised like the lead one.
+const noteImages = import.meta.glob<{ default: ImageMetadata }>('../content/notes/images/*', { eager: true });
+
+export interface NoteImage { src: ImageMetadata; alt: string }
+
+/** `./images/x.jpg` as written in a note → its image, if it exists. */
+function noteImage(src: string, alt: string): NoteImage | undefined {
+  const name = src.split('/').pop();
+  const hit = Object.entries(noteImages).find(([path]) => path.split('/').pop() === name);
+  return hit ? { src: hit[1].default, alt } : undefined;
+}
+
+export type Block =
+  | { html: string }
+  // A paragraph of nothing but images: one is a figure, more are a gallery.
+  // An italic line at its end (`*…*`) is the caption.
+  | { images: NoteImage[]; caption?: string }
+  // A table whose first header cell is an image: a card for a thing, with its facts.
+  | { card: { image: NoteImage; title: string; facts: [string, string][] } };
+
 export interface Body {
-  blocks: string[]; // top-level blocks of the note, as HTML
+  blocks: Block[]; // top-level blocks of the note
   footnotes: string; // the footnotes section, if any
   words: number;
 }
 
 /**
  * Splits a note's rendered HTML into its top-level blocks, so long notes can be
- * collapsed after a few paragraphs. Footnote ids are prefixed with the note's id,
- * so several notes with footnotes can share one page.
+ * collapsed after a few paragraphs, and picks out the image blocks. Footnote ids
+ * are prefixed with the note's id, so several notes with footnotes can share one page.
  */
 export function noteBody(note: Note): Body {
   const html = (note.rendered?.html ?? '').replace(/user-content-fn/g, `${note.id}-fn`);
@@ -39,7 +60,37 @@ export function noteBody(note: Note): Body {
   const footnotes = $('section.footnotes, section[data-footnotes]');
   const foot = footnotes.length ? $.html(footnotes) : '';
   footnotes.remove();
-  const blocks = $.root().children().toArray().map((el) => $.html(el));
+
+  // Images in a note's text render as placeholders holding their src and alt.
+  const imageOf = (img: cheerio.Cheerio<any>) => {
+    const raw = img.attr('__astro_image_');
+    const { src, alt } = raw ? JSON.parse(raw) : { src: img.attr('src') ?? '', alt: img.attr('alt') ?? '' };
+    return noteImage(src, alt ?? '');
+  };
+
+  const blocks: Block[] = $.root().children().toArray().map((el) => {
+    const node = $(el);
+    const imgs = node.find('img');
+    const em = node.children('em');
+    const caption = em.length === 1 && em.is(':last-child') ? em.text().trim() : undefined;
+    if (node.is('p') && imgs.length && node.text().trim() === (caption ?? '')) {
+      const images = imgs.toArray().map((img) => imageOf($(img))).filter((i) => !!i);
+      if (images.length) return { images, caption };
+    }
+    const lead = node.is('table') ? node.find('thead th').first().find('img') : null;
+    if (lead?.length) {
+      const image = imageOf(lead);
+      if (image) {
+        const title = node.find('thead th').eq(1).text().trim();
+        const facts = node.find('tbody tr').toArray().map((tr) => {
+          const [k, v] = $(tr).children('td').toArray();
+          return [$(k).text().trim().replace(/:$/, ''), $(v).html()?.trim() ?? ''] as [string, string];
+        });
+        return { card: { image, title, facts } };
+      }
+    }
+    return { html: $.html(el) };
+  });
   const words = $.root().text().split(/\s+/).filter(Boolean).length;
   return { blocks, footnotes: foot, words };
 }

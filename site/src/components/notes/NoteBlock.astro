@@ -1,0 +1,19 @@
+---
+// One block of a note's text: HTML, the note's lead photo, a photo, a gallery or a card.
+import NoteFigure from './NoteFigure.astro';
+import NoteGallery from './NoteGallery.astro';
+import NoteCard from './NoteCard.astro';
+import type { ImageMetadata } from 'astro';
+import type { Block } from '../../lib/notes';
+
+interface Props {
+  block: Block | { figure: true };
+  lead?: { src: ImageMetadata; alt: string; caption?: string; cutout?: boolean } | false;
+}
+const { block, lead } = Astro.props;
+---
+{'html' in block ? <Fragment set:html={block.html} />
+  : 'figure' in block ? (lead && <NoteFigure {...lead} />)
+  : 'card' in block ? <NoteCard {...block.card} />
+  : block.images.length === 1 ? <NoteFigure {...block.images[0]} caption={block.caption} />
+  : <NoteGallery images={block.images} caption={block.caption} />}

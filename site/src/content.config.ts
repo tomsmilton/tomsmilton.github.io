@@ -29,6 +29,8 @@ const notes = defineCollection({
     image: image().optional(),
     imageAlt: z.string().optional(),
     caption: z.string().optional(),
+    // "cutout" for an object on a transparent background: shown smaller and centred.
+    imageStyle: z.enum(['photo', 'cutout']).default('photo'),
     // "google-doc" for notes published from the Quick notes doc by scripts/sync-quick-notes.mjs.
     source: z.string().optional(),
   }),
