@@ -64,5 +64,4 @@ Disclaimer: maybe it’ll come broken; it’s hard to tell from a £10 eBay list
 ![A man reading a book in an office](./images/90s-00s-film-cameras-are-the-pinnacle-21.jpg)
 ![A magnifying lamp over a circuit board](./images/90s-00s-film-cameras-are-the-pinnacle-22.jpg)
 
-Lots more photos to come (and cameras to buy).\
-Want to explore Canon film cameras? Claude made [this artifact](https://claude.ai/artifact/DKkcADxPhHZuA7x3B5MjWu).
+Lots more photos to come (and cameras to buy). Want to explore Canon film cameras? Claude made [this artifact](https://claude.ai/artifact/DKkcADxPhHZuA7x3B5MjWu).
