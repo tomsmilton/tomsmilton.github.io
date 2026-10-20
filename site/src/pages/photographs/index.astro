@@ -1,0 +1,162 @@
+---
+// Photographs. The header is laid out like the homepage: recent highlights across the left
+// half, the author (a school-photo cut-out, stuck on like a sticker) standing on the header's
+// rule, and the title with the recent essays on the right. Then every published frame as one
+// big wall. Photos come from src/photos/ (scripts/photos.mjs, or /__photos/ on the dev
+// server); essays from src/content/essays/.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PhotoWall from '../../components/photos/PhotoWall.astro';
+import boy from '../../assets/author-school.png';
+import { getPhotos, getEssays, essayHref, isExternalEssay, type Essay } from '../../lib/photos';
+
+const photos = getPhotos();
+const essays = (await getEssays()).slice(0, 4);
+
+// Highlights: the photos marked as such, newest first. Until any are marked, the newest few.
+const marked = photos.filter((p) => p.highlight);
+const highlights = (marked.length ? marked : photos).slice(0, 5);
+const rolls = new Set(photos.map((p) => p.roll).filter(Boolean)).size;
+const previews = photos.filter((p) => p.preview).length;
+
+const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : e.data.url?.startsWith('/notes/') ? 'Quick note' : isExternalEssay(e) ? 'Elsewhere' : 'Essay');
+---
+<Base title="Photographs" crumbs={[{ label: 'photographs' }]} description="Photographs by Thomas Milton, mostly on 35mm film.">
+  <main class="ph">
+    <div class="ph__head">
+      <div class="ph__title">
+        <h1>Photographs</h1>
+        <p class="ph__intro">Mostly 35mm film, shot on a Canon EOS 10 and an EOS 300.</p>
+      </div>
+
+      {highlights.length > 0 && (
+        <section class="ph__hl" aria-labelledby="highlights">
+          <h2 class="ph__label" id="highlights"><span>Recent highlights</span>{photos.length > 0 && <a href="#all">all {photos.length} ↓</a>}</h2>
+          <PhotoWall photos={highlights} perRow={1.5} gap={6} label="Recent highlights" />
+        </section>
+      )}
+
+      <div class="ph__boy">
+        <p class="ph__note" aria-hidden="true">the photographer</p>
+        <svg class="ph__arrow" viewBox="0 0 90 74" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 4 C 14 10, 20 22, 30 30 C 40 38, 50 44, 58 58 C 60 61, 61 63, 62 66" />
+          <path d="M62 66 C 58 62, 54 61, 49 60" />
+          <path d="M62 66 C 63 60, 63 56, 62 51" />
+        </svg>
+        <Image class="ph__sticker" src={boy} alt="Thomas as a boy in a red school polo shirt" widths={[210]} sizes="210px" format="webp" quality={90} />
+      </div>
+
+      {essays.length > 0 && (
+        <section class="ph__essays" aria-labelledby="essays">
+          <h2 class="ph__label" id="essays"><span>Recent essays</span></h2>
+          <ol>
+            {essays.map((e) => (
+              <li>
+                <a href={essayHref(e)}>
+                  <Image src={e.data.cover} alt="" widths={[168, 252]} sizes="84px" />
+                  <span>
+                    <span class="ph__essay-title">{e.data.title}<span aria-hidden="true">{isExternalEssay(e) ? ' ↗' : ' →'}</span></span>
+                    {e.data.dek && <span class="ph__essay-dek">{e.data.dek}</span>}
+                    <span class="ph__essay-meta mono">{month(e.data.date)} · {kind(e)}{e.data.draft && ' · draft'}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+    </div>
+
+    {previews > 0 && (
+      <p class="ph__dev mono">
+        Dev server only: {previews} preview{previews === 1 ? '' : 's'} not yet published, {photos.length - previews} published.
+        Choose at <a href="/__photos/">/__photos/</a>.
+      </p>
+    )}
+
+    {photos.length > 0 ? (
+      <section class="ph__all" aria-labelledby="all">
+        <h2 class="ph__label ph__label--rule" id="all">Every frame <span class="ph__count">{photos.length}</span>{rolls > 1 && <span class="ph__aside">{rolls} rolls, newest first</span>}</h2>
+        <PhotoWall class="ph__wall" photos={photos} row={{ vw: 17, min: 110, max: 300 }} label="Every frame" />
+      </section>
+    ) : (
+      <p class="ph__empty">Photographs are on their way.</p>
+    )}
+  </main>
+</Base>
+
+<style>
+  .ph { padding: 40px 0 96px; }
+  .ph__head, .ph__dev, .ph__empty, .ph__all > .ph__label { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+
+  /* ---------- the header: phones first ---------- */
+  .ph__head {
+    display: grid; gap: 28px;
+    grid-template-areas: 'title' 'hl' 'essays' 'boy';
+    /* the rule the boy stands on */
+    background: linear-gradient(var(--ink), var(--ink)) no-repeat bottom / calc(100% - 2 * var(--gutter)) 1px;
+  }
+  .ph__title { grid-area: title; }
+  .ph__hl { grid-area: hl; min-width: 0; }
+  .ph__essays { grid-area: essays; min-width: 0; }
+  .ph__boy { grid-area: boy; }
+
+  h1 { margin: 0; font-weight: 200; font-size: clamp(56px, 15vw, 84px); line-height: 0.95; letter-spacing: -0.02em; }
+  .ph__intro { margin: 14px 0 0; max-width: 24em; font-size: 19px; line-height: 1.45; font-weight: 300; color: var(--text); }
+
+  .ph__label {
+    display: flex; justify-content: space-between; align-items: center; gap: 18px; margin: 0 0 12px;
+    font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--quick);
+  }
+  .ph__label a { letter-spacing: 0.04em; text-transform: none; color: var(--ink); }
+  .ph__label a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* the boy: a sticker, standing on the rule */
+  .ph__boy { position: relative; height: 340px; color: var(--ink); }
+  .ph__boy :global(.ph__sticker) {
+    position: absolute; bottom: 0; left: 50%; height: 300px; width: auto; transform: translateX(-50%) rotate(1.5deg); transform-origin: bottom center;
+    filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff)
+      drop-shadow(0 0 0.6px rgba(30, 34, 64, 0.35)) drop-shadow(0 8px 10px rgba(30, 34, 64, 0.14));
+  }
+  .ph__note { position: absolute; top: 8px; left: calc(50% - 150px); margin: 0; font-family: var(--hand); font-weight: 600; font-size: 30px; line-height: 1; white-space: nowrap; transform: rotate(-7deg); transform-origin: left bottom; }
+  .ph__arrow { position: absolute; top: 46px; left: calc(50% - 96px); width: 52px; height: 44px; overflow: visible; }
+
+  /* recent essays, like the homepage index */
+  .ph__essays ol { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--rule); }
+  .ph__essays a { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 14px; align-items: center; padding: 10px 0; border-top: 1px solid var(--rule); }
+  .ph__essays :global(img) { width: 84px; height: 56px; object-fit: cover; }
+  .ph__essay-title { display: block; font-size: 19px; line-height: 1.2; text-wrap: balance; }
+  .ph__essays a:hover .ph__essay-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  .ph__essay-dek { display: block; margin-top: 2px; font-size: 15px; line-height: 1.35; font-weight: 300; font-style: italic; color: var(--text); }
+  .ph__essay-meta { display: block; margin-top: 3px; font-size: 11.5px; color: var(--quick); }
+
+  /* ---------- wide screens: highlights | boy | title and essays ---------- */
+  @media (min-width: 900px) {
+    .ph { padding-top: 48px; }
+    .ph__head {
+      grid-template-columns: minmax(0, 6fr) minmax(170px, 2.1fr) minmax(0, 3.9fr);
+      grid-template-rows: auto 1fr;
+      grid-template-areas: 'hl boy title' 'hl boy essays';
+      gap: 0 32px;
+    }
+    .ph__hl, .ph__essays { padding-bottom: 36px; }
+    .ph__essays { align-self: end; padding-top: 32px; }
+    h1 { margin-top: -8px; font-size: clamp(56px, 5.8vw, 84px); }
+    .ph__boy { height: auto; min-height: 460px; }
+    .ph__boy :global(.ph__sticker) { height: min(400px, 100%); }
+    .ph__note { top: 14px; left: 0; font-size: clamp(26px, 2.4vw, 34px); }
+    .ph__arrow { top: 62px; left: 22%; width: 60px; height: 50px; }
+  }
+
+  .ph__dev { margin-top: 20px; margin-bottom: 0; font-size: 12px; color: var(--substack); }
+  .ph__dev a { text-decoration: underline; }
+
+  .ph__all { margin-top: 56px; }
+  .ph__label--rule { justify-content: flex-start; margin-bottom: 22px; }
+  .ph__label--rule::after { content: ''; order: 2; flex: 1; height: 1px; background: var(--rule); }
+  .ph__count { color: var(--ink); }
+  .ph__aside { order: 3; letter-spacing: 0.04em; text-transform: none; }
+  .ph__all :global(.ph__wall) { padding-inline: 4px; }
+  .ph__empty { margin-top: 40px; font-style: italic; font-size: 19px; color: var(--text); }
+</style>

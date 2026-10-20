@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import photoPicker from './integrations/photo-picker.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,4 +10,6 @@ export default defineConfig({
   base: '/',
   trailingSlash: 'always',
   build: { format: 'directory' },
+  // The dev server's photo chooser at /__photos/ (dev only).
+  integrations: [photoPicker()],
 });

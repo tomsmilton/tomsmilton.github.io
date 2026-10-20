@@ -1,0 +1,64 @@
+---
+// A photo essay on its own page. Written like a quick note: paragraphs, and a paragraph of
+// only images becomes a gallery. Essays with a `url` link out instead and have no page here.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import NoteBlock from '../../components/notes/NoteBlock.astro';
+import { getEssays, type Essay } from '../../lib/photos';
+import { noteBody } from '../../lib/notes';
+import { formatDate } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const essays = (await getEssays()).filter((e) => !e.data.url);
+  return essays.map((essay) => ({ params: { essay: essay.id }, props: { essay } }));
+}
+
+interface Props { essay: Essay }
+const { essay } = Astro.props;
+const { title, date, dek, cover, coverAlt } = essay.data;
+const { blocks, footnotes } = noteBody(essay);
+const short = title.length > 28 ? title.slice(0, 26).trimEnd() + '…' : title;
+---
+<Base title={title} crumbs={[{ label: 'photographs', href: '/photographs/' }, { label: short }]} description={dek ?? `A photo essay by Thomas Milton: ${title}.`}>
+  <main class="essay">
+    <header class="essay__head">
+      <p class="essay__kicker mono"><a href="/photographs/">Photographs</a> · {formatDate(date)}</p>
+      <h1>{title}</h1>
+      {dek && <p class="essay__dek">{dek}</p>}
+    </header>
+    <figure class="essay__cover">
+      <Image src={cover} alt={coverAlt ?? ''} widths={[720, 1080, 1440, 2000]} sizes="(min-width: 1200px) 1100px, 100vw" />
+    </figure>
+    <div class="essay__body">
+      {blocks.map((block) => <NoteBlock block={block} />)}
+      {footnotes && <Fragment set:html={footnotes} />}
+    </div>
+    <p class="essay__back mono"><a href="/photographs/">← All photographs</a></p>
+  </main>
+</Base>
+
+<style>
+  .essay { padding: 56px var(--gutter) 96px; }
+  .essay__head, .essay__body, .essay__back { max-width: 760px; margin-inline: auto; }
+  .essay__kicker { margin: 0 0 18px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--quick); }
+  .essay__kicker a:hover { color: var(--ink); }
+  h1 { margin: 0; font-weight: 300; font-size: clamp(40px, 5vw, 64px); line-height: 1.05; letter-spacing: -0.01em; text-wrap: balance; }
+  .essay__dek { margin: 16px 0 0; font-size: 22px; line-height: 1.4; font-weight: 300; font-style: italic; color: var(--text); }
+  .essay__cover { max-width: 1100px; margin: 40px auto 44px; }
+  .essay__cover :global(img) { width: 100%; height: auto; }
+
+  .essay__body { font-size: 20px; line-height: 1.63; color: var(--text); text-wrap: pretty; }
+  .essay__body :global(p) { margin: 0 0 20px; }
+  .essay__body :global(a) { box-shadow: inset 0 -1px 0 rgba(27, 47, 158, 0.45); }
+  .essay__body :global(a:hover) { box-shadow: inset 0 -2px 0 var(--ink); }
+  .essay__body :global(strong) { font-weight: 500; }
+  .essay__body :global(code) { font-family: var(--mono); font-size: 0.78em; padding: 1px 4px; background: var(--frame); border-radius: 2px; overflow-wrap: anywhere; }
+  .essay__body :global(hr) { height: 1px; margin: 36px 0; border: 0; background: var(--rule); }
+  .essay__body :global(h3), .essay__body :global(h4) { margin: 40px 0 12px; font-weight: 400; font-size: 26px; line-height: 1.25; color: var(--ink); }
+  /* galleries reach a little past the text on wide screens */
+  @media (min-width: 1000px) {
+    .essay__body :global(.gallery) { margin-inline: -100px; }
+  }
+  .essay__back { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 13px; }
+  .essay__back a:hover { text-decoration: underline; text-underline-offset: 3px; }
+</style>

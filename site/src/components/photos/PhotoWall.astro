@@ -1,0 +1,91 @@
+---
+// Photographs as a justified wall: rows that fill the width, every photo in a row the same
+// height and none of them cropped. Each photo opens in the viewer.
+//
+// By default it's pure CSS (each photo grows in proportion to its shape), so it reflows at any
+// width; rows are about `row.vw` of the screen tall (within `row.min`–`row.max` px) and can run
+// up to about a third taller. With `perRow`, rows are fixed
+// here instead (about that many landscape-widths each), so every row exactly fills the width:
+// better for a few big photos.
+import { Image, getImage } from 'astro:assets';
+import Lightbox from '../Lightbox.astro';
+import { photoLine, type Photo } from '../../lib/photos';
+
+interface Props {
+  photos: Photo[];
+  row?: { vw: number; min: number; max: number }; // row height, for the CSS layout
+  gap?: number;
+  perRow?: number; // fix the rows: landscape-widths per row
+  label: string;
+  class?: string;
+}
+const { photos, row = { vw: 17, min: 110, max: 300 }, gap = 4, perRow, label, class: className } = Astro.props;
+const full = await Promise.all(photos.map((p) => getImage({ src: p.src, width: Math.min(2000, p.src.width) })));
+const aspect = (p: Photo) => p.src.width / p.src.height;
+const index = new Map(photos.map((p, i) => [p, i]));
+
+// Fixed rows: fill each to about `perRow` landscape-widths; a short last row joins the one before.
+const rows: Photo[][] = [];
+if (perRow) {
+  const target = perRow * 1.5;
+  for (const p of photos) {
+    const row = rows.at(-1);
+    if (!row || row.reduce((s, q) => s + aspect(q), 0) >= target) rows.push([p]);
+    else row.push(p);
+  }
+  const sum = (r: Photo[]) => r.reduce((s, q) => s + aspect(q), 0);
+  if (rows.length > 1 && sum(rows.at(-1)!) < target * 0.6) rows.at(-2)!.push(...rows.pop()!);
+}
+const share = (p: Photo, row?: Photo[]) => (row ? aspect(p) / row.reduce((s, q) => s + aspect(q), 0) : 0);
+---
+{perRow ? (
+  <div class:list={['wall wall--rows', className]} data-lightbox aria-label={label} style={`--gap: ${gap}px`}>
+    {rows.map((row) => (
+      <div class="wall__row">
+        {row.map((p) => {
+          const i = index.get(p)!;
+          return (
+            <a class="wall__item" href={full[i].src} data-caption={photoLine(p)} style={`--a: ${aspect(p).toFixed(4)}`}>
+              <Image src={p.src} alt={p.alt} widths={[360, 540, 720, 1080, 1440]} sizes={`(min-width: 1440px) ${Math.round(1300 * share(p, row))}px, ${Math.round(100 * share(p, row))}vw`} />
+            </a>
+          );
+        })}
+      </div>
+    ))}
+  </div>
+) : (
+  <div class:list={['wall', className]} data-lightbox aria-label={label} style={`--row: clamp(${row.min}px, ${row.vw}vw, ${row.max}px); --gap: ${gap}px`}>
+    {photos.map((p, i) => (
+      <a class="wall__item" href={full[i].src} data-caption={photoLine(p)} style={`--a: ${aspect(p).toFixed(4)}`}>
+        <Image
+          src={p.src}
+          alt={p.alt}
+          widths={[240, 360, 540, 720, 1080]}
+          sizes={`(min-width: ${Math.round(row.max / row.vw * 100)}px) ${Math.round(aspect(p) * row.max * 1.3)}px, max(${Math.round(aspect(p) * row.min * 1.3)}px, ${Math.round(aspect(p) * row.vw * 1.3)}vw)`}
+        />
+      </a>
+    ))}
+  </div>
+)}
+<Lightbox />
+
+<style>
+  .wall { display: flex; flex-wrap: wrap; gap: var(--gap); }
+  /* Soaks up the spare width in the last row, so it isn't blown up to fill it. */
+  .wall::after { content: ''; flex: 1000000 1 0; }
+  .wall__item {
+    position: relative; display: block; overflow: hidden;
+    flex: var(--a) 1 calc(var(--a) * var(--row));
+    aspect-ratio: var(--a);
+    background: var(--frame); cursor: zoom-in;
+  }
+  .wall__item :global(img) { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.25s, transform 0.5s; }
+  .wall__item:hover :global(img) { opacity: 0.9; transform: scale(1.012); }
+  .wall__item:focus-visible { outline-offset: -3px; }
+
+  /* fixed rows: each row is exactly the width, its photos sharing it by shape */
+  .wall--rows { display: grid; gap: var(--gap); }
+  .wall--rows::after { content: none; }
+  .wall__row { display: flex; gap: var(--gap); }
+  .wall--rows .wall__item { flex: var(--a) 1 0; min-width: 0; }
+</style>

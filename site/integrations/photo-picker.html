@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choose photographs · tsmilton</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,200;0,300;0,400;1,300&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #faf7f0; --ink: #1b2f9e; --text: #1e2240; --frame: #eee9de;
+    --rule: rgba(27, 47, 158, 0.22); --grey: #6b6965; --hl: #c2410c;
+    --serif: 'Spectral', Georgia, serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --row: 180px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--serif); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* the bar: counts and filters, always in view */
+  .bar { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid rgba(27, 47, 158, 0.28); }
+  .bar__inner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 28px; padding: 10px clamp(16px, 4vw, 48px); font-family: var(--mono); font-size: 13px; }
+  .crumbs { display: flex; gap: 8px; white-space: nowrap; }
+  .crumbs b { font-weight: 500; }
+  .crumbs span { opacity: 0.45; }
+  .counts { display: flex; gap: 18px; white-space: nowrap; }
+  .counts strong { font-weight: 500; }
+  .counts .hl strong { color: var(--hl); }
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+  .filters button { min-height: 32px; padding: 4px 12px; border: 1px solid rgba(27, 47, 158, 0.35); border-radius: 999px; background: none; cursor: pointer; font-size: 12px; }
+  .filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .bar label { display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .bar a { white-space: nowrap; }
+
+  .intro { max-width: 1440px; margin: 0; padding: 28px clamp(16px, 4vw, 48px) 0; }
+  .intro h1 { margin: 0; font-weight: 200; font-size: clamp(44px, 6vw, 80px); line-height: 1; letter-spacing: -0.02em; }
+  .intro p { max-width: 46em; margin: 14px 0 0; font-size: 18px; line-height: 1.5; font-weight: 300; color: var(--text); }
+  .intro kbd { font-family: var(--mono); font-size: 12px; padding: 1px 5px; border: 1px solid var(--rule); border-radius: 3px; background: #fff; }
+
+  /* a roll */
+  .roll { padding: 36px clamp(16px, 4vw, 48px) 0; }
+  .roll[hidden] { display: none; }
+  .roll__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+  .roll__head h2 { margin: 0; font-weight: 400; font-size: 24px; }
+  .roll__meta { font-family: var(--mono); font-size: 12px; color: var(--grey); }
+  .roll__meta strong { color: var(--ink); font-weight: 500; }
+  .roll__acts { margin-left: auto; display: flex; gap: 8px; }
+  .roll__acts button { min-height: 32px; padding: 4px 12px; border: 1px solid rgba(27, 47, 158, 0.35); border-radius: 3px; background: none; cursor: pointer; font-family: var(--mono); font-size: 12px; }
+  .roll__acts button:hover { background: var(--ink); color: var(--bg); }
+
+  /* the photos: justified rows, nothing cropped */
+  .grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .grid::after { content: ''; flex: 1000000 1 0; }
+  .tile { position: relative; flex: var(--a) 1 calc(var(--a) * var(--row)); aspect-ratio: var(--a); background: var(--frame); }
+  .tile[hidden] { display: none; }
+  .tile__keep { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+  .tile__keep img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0.42; filter: saturate(0.35); transition: opacity 0.15s, filter 0.15s; }
+  .tile__keep:hover img { opacity: 0.75; filter: none; }
+  .tile.is-kept .tile__keep img { opacity: 1; filter: none; }
+  .tile.is-kept::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 0 3px var(--ink); pointer-events: none; }
+  .tile__label { position: absolute; left: 6px; bottom: 6px; padding: 2px 6px; font-family: var(--mono); font-size: 11px; line-height: 1.4; background: rgba(250, 247, 240, 0.9); color: var(--grey); pointer-events: none; }
+  .tile.is-kept .tile__label { background: var(--ink); color: var(--bg); }
+  .tile.is-blank .tile__keep { outline: 1px dashed rgba(107, 105, 101, 0.6); outline-offset: -1px; }
+  .tile__star, .tile__zoom {
+    position: absolute; top: 6px; width: 34px; height: 34px; display: grid; place-items: center;
+    border: 1px solid rgba(27, 47, 158, 0.35); border-radius: 50%; background: rgba(250, 247, 240, 0.92); cursor: pointer; font-size: 16px; line-height: 1;
+  }
+  .tile__star { right: 6px; color: var(--grey); }
+  .tile__star[aria-pressed="true"] { background: var(--hl); border-color: var(--hl); color: #fff; }
+  .tile__zoom { right: 46px; font-size: 14px; opacity: 0; }
+  .tile:hover .tile__zoom, .tile__zoom:focus-visible { opacity: 1; }
+  .tile.is-hl::after { box-shadow: inset 0 0 0 3px var(--hl); }
+
+  .empty { padding: 40px clamp(16px, 4vw, 48px); font-style: italic; font-size: 19px; color: var(--text); }
+  .foot { margin: 48px clamp(16px, 4vw, 48px) 64px; padding-top: 16px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 12px; line-height: 1.7; color: var(--grey); }
+  .foot code { color: var(--ink); }
+
+  /* the viewer */
+  .viewer { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(16, 18, 34, 0.97); color: #faf7f0; }
+  .viewer::backdrop { background: transparent; }
+  .viewer[open] { display: grid; grid-template-rows: 1fr auto; }
+  .viewer__stage { display: grid; place-items: center; min-height: 0; padding: 20px 70px 0; }
+  .viewer__stage img { max-width: 100%; max-height: calc(100dvh - 120px); object-fit: contain; }
+  .viewer__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 14px; padding: 16px; font-family: var(--mono); font-size: 13px; }
+  .viewer__bar button { min-height: 40px; padding: 6px 16px; border: 1px solid rgba(250, 247, 240, 0.4); border-radius: 999px; background: none; color: inherit; cursor: pointer; }
+  .viewer__bar button[aria-pressed="true"] { background: #faf7f0; color: #10122a; border-color: #faf7f0; }
+  .viewer__bar .viewer__hl[aria-pressed="true"] { background: var(--hl); border-color: var(--hl); color: #fff; }
+  .viewer__name { min-width: 150px; text-align: center; opacity: 0.8; }
+  .viewer__nav { position: absolute; top: 50%; transform: translateY(-50%); width: 56px; height: 72px; border: 0; background: none; color: #faf7f0; font-size: 26px; cursor: pointer; opacity: 0.7; }
+  .viewer__nav:hover { opacity: 1; }
+  .viewer__prev { left: 6px; }
+  .viewer__next { right: 6px; }
+  .viewer__close { position: absolute; top: 14px; right: 18px; border: 0; background: none; color: #faf7f0; font-family: var(--mono); font-size: 13px; cursor: pointer; padding: 8px; opacity: 0.8; }
+
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); padding: 10px 16px; background: var(--hl); color: #fff; font-family: var(--mono); font-size: 13px; border-radius: 4px; }
+  .toast[hidden] { display: none; }
+
+  @media (max-width: 640px) {
+    :root { --row: 110px; }
+    .filters { margin-left: 0; }
+    .viewer__stage { padding: 12px 0 0; }
+    .viewer__nav { top: auto; bottom: 70px; transform: none; }
+  }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="bar__inner">
+    <nav class="crumbs" aria-label="Breadcrumb"><b>tsmilton</b><span>/</span>photographs<span>/</span>choose</nav>
+    <p class="counts" aria-live="polite" style="margin: 0"><span><strong id="n-kept">0</strong> kept</span><span class="hl"><strong id="n-hl">0</strong> ★ highlights</span><span><span id="n-all">0</span> frames</span></p>
+    <div class="filters" role="group" aria-label="Show">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="kept" aria-pressed="false">Kept</button>
+      <button type="button" data-filter="hl" aria-pressed="false">★ Highlights</button>
+      <button type="button" data-filter="not" aria-pressed="false">Not kept</button>
+    </div>
+    <label><input type="checkbox" id="show-blank"> Blank frames</label>
+    <a href="/photographs/" target="_blank" rel="noopener">View the page ↗</a>
+  </div>
+</header>
+
+<div class="intro">
+  <h1>Choose photographs</h1>
+  <p>Click a photo to keep it on the site; click again to let it go. <b style="color: var(--hl); font-weight: 500">★</b> makes it a highlight (the newest six sit at the top of the page). <kbd>⤢</kbd> or a double-click opens it large, where <kbd>K</kbd> keeps, <kbd>H</kbd> highlights and the arrow keys step through. Every choice saves straight away.</p>
+</div>
+
+<main id="rolls"><p class="empty">Loading…</p></main>
+
+<p class="foot">Kept photos are in <code>src/photos/published/</code> and highlights in <code>src/photos/photos.json</code>. They go live when those are committed and pushed. This page only exists on the dev server.</p>
+
+<dialog class="viewer" id="viewer" aria-label="Photo">
+  <div class="viewer__stage"><img id="viewer-img" alt=""></div>
+  <div class="viewer__bar">
+    <button type="button" class="viewer__keep" id="viewer-keep" aria-pressed="false">Keep <span aria-hidden="true">(K)</span></button>
+    <span class="viewer__name" id="viewer-name"></span>
+    <button type="button" class="viewer__hl" id="viewer-hl" aria-pressed="false">★ Highlight <span aria-hidden="true">(H)</span></button>
+  </div>
+  <button type="button" class="viewer__nav viewer__prev" id="viewer-prev" aria-label="Previous photo">←</button>
+  <button type="button" class="viewer__nav viewer__next" id="viewer-next" aria-label="Next photo">→</button>
+  <button type="button" class="viewer__close" id="viewer-close">Close ✕</button>
+</dialog>
+
+<p class="toast" id="toast" role="alert" hidden></p>
+
+<script>
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthOf = (date) => (date ? `${months[Number(date.slice(5, 7)) - 1]} ${date.slice(0, 4)}` : '');
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+  let photos = [];
+  const byId = new Map();
+  let filter = 'all';
+  let showBlank = false;
+
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => (t.hidden = true), 3500);
+  }
+
+  // ---------- render ----------
+
+  function tile(p) {
+    const el = document.createElement('div');
+    el.className = 'tile';
+    el.dataset.id = p.id;
+    el.style.setProperty('--a', (p.w / p.h).toFixed(4));
+    const frame = p.frame != null ? String(p.frame).padStart(2, '0') : p.id;
+    el.innerHTML = `
+      <button type="button" class="tile__keep" aria-pressed="false" aria-label="Keep frame ${frame} of roll ${p.roll}">
+        <img loading="lazy" decoding="async" src="/__photos/thumb/${p.id}.jpg" alt="">
+      </button>
+      <span class="tile__label"></span>
+      <button type="button" class="tile__zoom" aria-label="View frame ${frame} of roll ${p.roll} larger">⤢</button>
+      <button type="button" class="tile__star" aria-pressed="false" aria-label="Highlight frame ${frame} of roll ${p.roll}">★</button>`;
+    return el;
+  }
+
+  function paint(p) {
+    const el = $(`.tile[data-id="${p.id}"]`);
+    if (!el) return;
+    el.classList.toggle('is-kept', p.kept);
+    el.classList.toggle('is-hl', p.highlight);
+    el.classList.toggle('is-blank', p.blank);
+    $('.tile__keep', el).setAttribute('aria-pressed', String(p.kept));
+    $('.tile__star', el).setAttribute('aria-pressed', String(p.highlight));
+    const frame = p.frame != null ? String(p.frame).padStart(2, '0') : p.id;
+    $('.tile__label', el).textContent = `${frame}${p.blank ? ' · blank' : ''}${p.kept ? ' · kept' : ''}`;
+  }
+
+  function counts() {
+    $('#n-kept').textContent = photos.filter((p) => p.kept).length;
+    $('#n-hl').textContent = photos.filter((p) => p.highlight).length;
+    $('#n-all').textContent = photos.filter((p) => !p.blank || p.kept).length;
+    for (const sec of $$('.roll')) {
+      const mine = photos.filter((p) => p.roll === sec.dataset.roll);
+      $('.roll__kept', sec).textContent = mine.filter((p) => p.kept).length;
+      $('.roll__total', sec).textContent = mine.filter((p) => !p.blank || p.kept).length;
+    }
+  }
+
+  const visible = (p) => (showBlank || !p.blank || p.kept)
+    && (filter === 'all' || (filter === 'kept' && p.kept) || (filter === 'hl' && p.highlight) || (filter === 'not' && !p.kept));
+
+  function applyFilter() {
+    for (const p of photos) { const el = $(`.tile[data-id="${p.id}"]`); if (el) el.hidden = !visible(p); }
+    for (const sec of $$('.roll')) sec.hidden = !$$('.tile', sec).some((t) => !t.hidden);
+    const none = !$$('.roll').some((s) => !s.hidden);
+    let empty = $('#rolls > .empty');
+    if (none && !empty) { empty = document.createElement('p'); empty.className = 'empty'; $('#rolls').append(empty); }
+    if (empty) { empty.textContent = none ? 'Nothing here yet.' : ''; empty.hidden = !none; }
+  }
+
+  function render() {
+    const main = $('#rolls');
+    main.innerHTML = '';
+    const rolls = [...new Set(photos.map((p) => p.roll))];
+    for (const roll of rolls) {
+      const mine = photos.filter((p) => p.roll === roll);
+      const sec = document.createElement('section');
+      sec.className = 'roll';
+      sec.dataset.roll = roll;
+      sec.setAttribute('aria-label', `Roll ${roll}`);
+      sec.innerHTML = `
+        <div class="roll__head">
+          <h2>Roll ${roll}</h2>
+          <span class="roll__meta">${monthOf(mine[0].date)} · <strong class="roll__kept">0</strong> of <span class="roll__total">0</span> kept</span>
+          <span class="roll__acts">
+            <button type="button" data-roll-act="keep">Keep all</button>
+            <button type="button" data-roll-act="clear">Keep none</button>
+          </span>
+        </div>
+        <div class="grid"></div>`;
+      const grid = $('.grid', sec);
+      for (const p of mine) grid.append(tile(p));
+      main.append(sec);
+    }
+    photos.forEach(paint);
+    counts();
+    applyFilter();
+  }
+
+  // ---------- saving ----------
+
+  async function save(id, change) {
+    const before = { ...byId.get(id) };
+    const p = byId.get(id);
+    // Show it straight away; the server has the last word.
+    if ('keep' in change) { p.kept = change.keep; if (!change.keep) p.highlight = false; }
+    if ('highlight' in change) { p.highlight = change.highlight; if (change.highlight) p.kept = true; }
+    paint(p); counts(); syncViewer();
+    try {
+      const res = await fetch(`/__photos/api/photos/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(change) });
+      if (!res.ok) throw new Error((await res.json()).error || res.statusText);
+      Object.assign(p, await res.json());
+    } catch (err) {
+      Object.assign(p, before);
+      toast(`Couldn't save ${id}: ${err.message}`);
+    }
+    paint(p); counts(); applyFilter(); syncViewer();
+  }
+
+  // ---------- the viewer ----------
+
+  const viewer = $('#viewer');
+  let at = null;
+  const shown = () => $$('.tile').filter((t) => !t.hidden).map((t) => t.dataset.id);
+
+  function openViewer(id) {
+    at = id;
+    syncViewer();
+    if (!viewer.open) viewer.showModal();
+  }
+  function syncViewer() {
+    if (at == null) return;
+    const p = byId.get(at);
+    const img = $('#viewer-img');
+    if (!img.src.endsWith(`/full/${p.id}.jpg`)) img.src = `/__photos/full/${p.id}.jpg`;
+    img.alt = `Roll ${p.roll}, frame ${p.frame}`;
+    $('#viewer-name').textContent = `Roll ${p.roll} · frame ${String(p.frame ?? '').padStart(2, '0')}`;
+    $('#viewer-keep').setAttribute('aria-pressed', String(p.kept));
+    $('#viewer-keep').firstChild.textContent = p.kept ? 'Kept ' : 'Keep ';
+    $('#viewer-hl').setAttribute('aria-pressed', String(p.highlight));
+  }
+  function step(d) {
+    const ids = shown();
+    if (!ids.length) return;
+    const i = ids.indexOf(at);
+    openViewer(ids[(i + d + ids.length) % ids.length]);
+  }
+  $('#viewer-prev').addEventListener('click', () => step(-1));
+  $('#viewer-next').addEventListener('click', () => step(1));
+  $('#viewer-close').addEventListener('click', () => viewer.close());
+  $('#viewer-keep').addEventListener('click', () => save(at, { keep: !byId.get(at).kept }));
+  $('#viewer-hl').addEventListener('click', () => save(at, { highlight: !byId.get(at).highlight }));
+  viewer.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') step(1);
+    else if (e.key === 'ArrowLeft') step(-1);
+    else if (e.key === 'k' || e.key === 'K') save(at, { keep: !byId.get(at).kept });
+    else if (e.key === 'h' || e.key === 'H') save(at, { highlight: !byId.get(at).highlight });
+    else return;
+    e.preventDefault();
+  });
+  viewer.addEventListener('close', () => { $(`.tile[data-id="${at}"] .tile__keep`)?.focus(); at = null; });
+
+  // ---------- the grid ----------
+
+  $('#rolls').addEventListener('click', async (e) => {
+    const t = e.target.closest('.tile');
+    if (t) {
+      const id = t.dataset.id;
+      if (e.target.closest('.tile__star')) return save(id, { highlight: !byId.get(id).highlight });
+      if (e.target.closest('.tile__zoom')) return openViewer(id);
+      if (e.target.closest('.tile__keep') && e.detail < 2) return save(id, { keep: !byId.get(id).kept });
+      return;
+    }
+    const act = e.target.closest('[data-roll-act]');
+    if (act) {
+      const roll = act.closest('.roll').dataset.roll;
+      const keep = act.dataset.rollAct === 'keep';
+      // Keep all skips the blank frames.
+      for (const p of photos.filter((q) => q.roll === roll && q.kept !== keep && (!q.blank || !keep))) await save(p.id, { keep });
+    }
+  });
+  // A double-click opens the photo (and undoes the first click's keep).
+  $('#rolls').addEventListener('dblclick', (e) => {
+    const t = e.target.closest('.tile');
+    if (!t || !e.target.closest('.tile__keep')) return;
+    save(t.dataset.id, { keep: !byId.get(t.dataset.id).kept });
+    openViewer(t.dataset.id);
+  });
+  $('#rolls').addEventListener('keydown', (e) => {
+    const t = e.target.closest('.tile');
+    if (!t) return;
+    if (e.key === 'h' || e.key === 'H') { e.preventDefault(); save(t.dataset.id, { highlight: !byId.get(t.dataset.id).highlight }); }
+  });
+
+  for (const b of $$('[data-filter]')) b.addEventListener('click', () => {
+    filter = b.dataset.filter;
+    for (const o of $$('[data-filter]')) o.setAttribute('aria-pressed', String(o === b));
+    applyFilter();
+  });
+  $('#show-blank').addEventListener('change', (e) => { showBlank = e.target.checked; applyFilter(); });
+
+  fetch('/__photos/api/photos').then((r) => r.json()).then((list) => {
+    photos = list;
+    for (const p of photos) byId.set(p.id, p);
+    render();
+  }).catch((err) => { $('#rolls').innerHTML = ''; toast(`Couldn't load the photos: ${err.message}`); });
+</script>
+</body>
+</html>

@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# photographs imported for a local look, not yet published (scripts/photos.mjs)
+src/photos/preview/

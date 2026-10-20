@@ -1,6 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import * as cheerio from 'cheerio';
+import { posix } from 'node:path';
 
 export type Note = CollectionEntry<'notes'>;
 
@@ -23,16 +24,24 @@ export function tagCounts(notes: Note[]): [string, number][] {
   return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 }
 
-// Every image a note can use, so images inside the text can be optimised like the lead one.
-const noteImages = import.meta.glob<{ default: ImageMetadata }>('../content/notes/images/*', { eager: true });
+// Every image a note or essay can use, so images inside the text can be optimised like the lead
+// one. Keyed by path from the project root (src/content/notes/images/x.jpg).
+const images = Object.fromEntries(Object.entries({
+  ...import.meta.glob<{ default: ImageMetadata }>('../content/**/*.{jpg,jpeg,png,webp,gif}', { eager: true }),
+  // Photographs, so an essay can use them; previews only exist locally.
+  ...import.meta.glob<{ default: ImageMetadata }>('../photos/{published,preview}/*.jpg', { eager: true }),
+}).map(([path, mod]) => [path.replace(/^\.\.\//, 'src/'), mod.default]));
 
 export interface NoteImage { src: ImageMetadata; alt: string }
 
-/** `./images/x.jpg` as written in a note → its image, if it exists. */
-function noteImage(src: string, alt: string): NoteImage | undefined {
+/** `./images/x.jpg` as written in an entry at `from` → its image, if it exists. */
+function entryImage(src: string, alt: string, from?: string): NoteImage | undefined {
+  const hit = from ? images[posix.normalize(posix.join(posix.dirname(from), src))] : undefined;
+  if (hit) return { src: hit, alt };
+  // Older notes: fall back to the file name.
   const name = src.split('/').pop();
-  const hit = Object.entries(noteImages).find(([path]) => path.split('/').pop() === name);
-  return hit ? { src: hit[1].default, alt } : undefined;
+  const byName = Object.entries(images).find(([path]) => path.split('/').pop() === name);
+  return byName ? { src: byName[1], alt } : undefined;
 }
 
 export type Block =
@@ -50,11 +59,11 @@ export interface Body {
 }
 
 /**
- * Splits a note's rendered HTML into its top-level blocks, so long notes can be
- * collapsed after a few paragraphs, and picks out the image blocks. Footnote ids
- * are prefixed with the note's id, so several notes with footnotes can share one page.
+ * Splits a note's (or photo essay's) rendered HTML into its top-level blocks, so long
+ * notes can be collapsed after a few paragraphs, and picks out the image blocks. Footnote
+ * ids are prefixed with the entry's id, so several notes with footnotes can share one page.
  */
-export function noteBody(note: Note): Body {
+export function noteBody(note: { id: string; filePath?: string; rendered?: { html: string } }): Body {
   const html = (note.rendered?.html ?? '').replace(/user-content-fn/g, `${note.id}-fn`);
   const $ = cheerio.load(html, null, false);
   const footnotes = $('section.footnotes, section[data-footnotes]');
@@ -65,7 +74,7 @@ export function noteBody(note: Note): Body {
   const imageOf = (img: cheerio.Cheerio<any>) => {
     const raw = img.attr('__astro_image_');
     const { src, alt } = raw ? JSON.parse(raw) : { src: img.attr('src') ?? '', alt: img.attr('alt') ?? '' };
-    return noteImage(src, alt ?? '');
+    return entryImage(src, alt ?? '', note.filePath);
   };
 
   const blocks: Block[] = $.root().children().toArray().map((el) => {

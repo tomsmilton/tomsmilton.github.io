@@ -36,4 +36,20 @@ const notes = defineCollection({
   }),
 });
 
-export const collections = { substack, notes };
+// Photo essays: one Markdown file per essay in src/content/essays/. An essay with a `url` is a
+// link (to Substack, say, or a note); without one it gets its own page at /photographs/<slug>/,
+// written like a quick note (a paragraph of only images becomes a gallery).
+const essays = defineCollection({
+  loader: glob({ pattern: '*.md', base: 'src/content/essays' }),
+  schema: ({ image }) => z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    dek: z.string().optional(), // a line under the title
+    cover: image(),
+    coverAlt: z.string().optional(),
+    url: z.string().optional(),
+    draft: z.boolean().default(false), // drafts show on the dev server only
+  }),
+});
+
+export const collections = { substack, notes, essays };
