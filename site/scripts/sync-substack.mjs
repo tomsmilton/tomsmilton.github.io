@@ -67,7 +67,7 @@ async function nativeBody(slug) {
         `<span class="embed-pub">${esc(a.publication_name)}</span>` +
         `<strong>${esc(a.title)}</strong>` +
         (a.truncated_body_text ? `<span class="embed-text">${esc(a.truncated_body_text)}</span>` : '') +
-        `<span class="embed-cta">Read on Substack ↗</span></a></aside>`,
+        `<span class="embed-cta">Read on Substack ↗︎</span></a></aside>`,
     );
   });
 

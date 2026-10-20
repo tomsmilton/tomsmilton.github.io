@@ -32,7 +32,7 @@ const shortCrumb = title.length > 28 ? title.slice(0, 26).trimEnd() + '…' : ti
       {subtitle && <p class="standfirst">{subtitle}</p>}
       <p class="byline mono">
         <span>By {bylines.length ? bylines.join(' · ') : 'Thomas Milton'}</span>
-        <a class="link" href={url}>Originally on Substack ↗</a>
+        <a class="link" href={url}>Originally on Substack ↗︎</a>
       </p>
     </header>
 
@@ -43,12 +43,12 @@ const shortCrumb = title.length > 28 ? title.slice(0, 26).trimEnd() + '…' : ti
         <Image class="signoff__boy" src={boy} alt="Thomas as a boy on inline skates, about 2006" widths={[120, 240]} sizes="120px" format="webp" />
         <div>
           <p class="signoff__note">← the author</p>
-          <p class="signoff__text">Thomas Milton runs Amodo, an R&amp;D company in Sheffield working on AI verification. <a class="link" href={url}>Read it on Substack ↗</a></p>
+          <p class="signoff__text">Thomas Milton runs Amodo, an R&amp;D company in Sheffield working on AI verification. <a class="link" href={url}>Read it on Substack ↗︎</a></p>
         </div>
       </div>
       <nav class="pager mono" aria-label="More writing">
-        {older ? <a class:list={[{ substack: isExternal(older) }]} href={postHref(older)}>← {older.data.title}{isExternal(older) && ' ↗'}</a> : <span />}
-        {newer ? <a class:list={['pager__next', { substack: isExternal(newer) }]} href={postHref(newer)}>{newer.data.title}{isExternal(newer) && ' ↗'} →</a> : <span />}
+        {older ? <a class:list={[{ substack: isExternal(older) }]} href={postHref(older)}>← {older.data.title}{isExternal(older) && ' ↗︎'}</a> : <span />}
+        {newer ? <a class:list={['pager__next', { substack: isExternal(newer) }]} href={postHref(newer)}>{newer.data.title}{isExternal(newer) && ' ↗︎'} →</a> : <span />}
       </nav>
     </footer>
   </main>

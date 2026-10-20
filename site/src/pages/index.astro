@@ -40,7 +40,7 @@ const latest = note && (!post || note.data.date >= post.data.date)
     {latest && (
       <a class="home__latest" href={latest.href}>
         <span class="label">Latest</span>
-        <span class="home__latest-title">{latest.title}<span aria-hidden="true">{latest.external ? ' ↗' : ' →'}</span></span>
+        <span class="home__latest-title">{latest.title}<span aria-hidden="true">{latest.external ? ' ↗︎' : ' →'}</span></span>
       </a>
     )}
   </main>

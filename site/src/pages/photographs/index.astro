@@ -54,7 +54,7 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
                 <a href={essayHref(e)}>
                   <Image src={e.data.cover} alt="" widths={[168, 252]} sizes="84px" />
                   <span>
-                    <span class="ph__essay-title">{e.data.title}<span aria-hidden="true">{isExternalEssay(e) ? ' ↗' : ' →'}</span></span>
+                    <span class="ph__essay-title">{e.data.title}<span aria-hidden="true">{isExternalEssay(e) ? ' ↗︎' : ' →'}</span></span>
                     {e.data.dek && <span class="ph__essay-dek">{e.data.dek}</span>}
                     <span class="ph__essay-meta mono">{month(e.data.date)} · {kind(e)}{e.data.draft && ' · draft'}</span>
                   </span>

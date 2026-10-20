@@ -10,16 +10,16 @@ const [newest, ...earlier] = await getPosts();
       {newest && (
         <section class="feature" aria-labelledby="newest">
           <p class="label">Newest · {formatDate(newest.data.date)}</p>
-          <h1 id="newest" class="feature__title"><a href={postHref(newest)}>{newest.data.title}{isExternal(newest) && <span class="ext substack" aria-label="(on Substack)"> ↗</span>}</a></h1>
+          <h1 id="newest" class="feature__title"><a href={postHref(newest)}>{newest.data.title}{isExternal(newest) && <span class="ext substack" aria-label="(on Substack)"> ↗︎</span>}</a></h1>
           {newest.data.subtitle && <p class="feature__sub">{newest.data.subtitle}</p>}
-          <a class:list={['feature__go mono', { substack: isExternal(newest) }]} href={postHref(newest)}>{isExternal(newest) ? 'Read on Substack ↗' : 'Read the essay →'}</a>
+          <a class:list={['feature__go mono', { substack: isExternal(newest) }]} href={postHref(newest)}>{isExternal(newest) ? 'Read on Substack ↗︎' : 'Read the essay →'}</a>
         </section>
       )}
       <section class="earlier" aria-label="Earlier writing">
         <div class="earlier__head">
           <p class="label">Earlier</p>
           <ul class="key mono" aria-label="Key">
-            <li class="substack">Substack ↗</li>
+            <li class="substack">Substack ↗︎</li>
             <li>Longform</li>
             <li class="quick"><a href="/notes/">Quick notes</a></li>
           </ul>
@@ -28,7 +28,7 @@ const [newest, ...earlier] = await getPosts();
           {earlier.map((p) => (
             <li>
               <a class:list={[{ substack: isExternal(p) }]} href={postHref(p)}>
-                <span class="list__title">{p.data.title}{isExternal(p) && <span class="ext" aria-label="(on Substack)"> ↗</span>}</span>
+                <span class="list__title">{p.data.title}{isExternal(p) && <span class="ext" aria-label="(on Substack)"> ↗︎</span>}</span>
                 <time class="list__date mono" datetime={p.data.date.toISOString()}>{formatDate(p.data.date, 'short')}</time>
               </a>
             </li>
