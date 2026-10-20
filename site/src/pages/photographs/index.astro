@@ -74,7 +74,8 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
     )}
 
     {photos.length > 0 ? (
-      <section class="ph__all" aria-label="Every photograph">
+      <section class="ph__all" aria-labelledby="all">
+        <h2 class="ph__label" id="all">Full gallery</h2>
         <PhotoWall class="ph__wall" photos={photos} row={{ vw: 17, min: 110, max: 300 }} label="Every photograph" />
       </section>
     ) : (
@@ -85,7 +86,7 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
 
 <style>
   .ph { padding: 40px 0 96px; }
-  .ph__head, .ph__dev, .ph__empty { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+  .ph__head, .ph__dev, .ph__empty, .ph__all > .ph__label { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
 
   /* ---------- the header: phones first ---------- */
   .ph__head {
