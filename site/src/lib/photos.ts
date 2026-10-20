@@ -8,7 +8,8 @@ import details from '../photos/photos.json';
 const published = import.meta.glob<{ default: ImageMetadata }>('../photos/published/*.jpg', { eager: true });
 const preview = import.meta.glob<{ default: ImageMetadata }>('../photos/preview/*.jpg', { eager: true });
 
-interface Details { roll?: string; frame?: number; date?: string; highlight?: boolean; caption?: string; alt?: string; blank?: boolean }
+// `highlight` is true, or a number to put the highlights in an order (1 first).
+interface Details { roll?: string; frame?: number; date?: string; highlight?: boolean | number; caption?: string; alt?: string; blank?: boolean }
 
 export interface Photo {
   id: string; // "6707-07": roll 6707, frame 7
@@ -17,6 +18,7 @@ export interface Photo {
   roll?: string;
   frame?: number;
   highlight: boolean;
+  highlightOrder: number; // numbered highlights first, in their order
   caption?: string;
   alt: string;
   preview: boolean; // not published yet: dev server only
@@ -41,6 +43,7 @@ export function getPhotos(): Photo[] {
       roll: d.roll,
       frame: d.frame,
       highlight: !!d.highlight,
+      highlightOrder: typeof d.highlight === 'number' ? d.highlight : Infinity,
       caption: d.caption,
       alt: d.alt ?? d.caption ?? (d.roll ? `Film photograph, roll ${d.roll}, frame ${d.frame}` : 'Photograph'),
       preview: isPreview,
@@ -49,12 +52,12 @@ export function getPhotos(): Photo[] {
   return photos.sort((a, b) => b.date.getTime() - a.date.getTime() || (b.roll ?? '').localeCompare(a.roll ?? '') || (a.frame ?? 0) - (b.frame ?? 0));
 }
 
-/** The line under a photo in the viewer: its caption, then roll and scan date. */
-export function photoLine(p: Photo): string {
-  const when = p.date.getTime() ? p.date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : '';
-  const meta = [p.roll && `Roll ${p.roll}`, when].filter(Boolean).join(' · ');
-  return [p.caption, meta].filter(Boolean).join(' — ');
-}
+/** The line under a photo in the viewer: its caption, if it has one. */
+export const photoLine = (p: Photo) => p.caption ?? '';
+
+/** Highlighted photos: numbered ones in their order, then the rest newest first. */
+export const getHighlights = (photos: Photo[]) =>
+  photos.filter((p) => p.highlight).sort((a, b) => a.highlightOrder - b.highlightOrder);
 
 export type Essay = CollectionEntry<'essays'>;
 

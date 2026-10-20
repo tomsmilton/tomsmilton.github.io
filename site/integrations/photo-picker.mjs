@@ -61,7 +61,8 @@ function update(id, { keep, highlight }) {
     setKept(id, keep);
     if (keep && d.blank) d.blank = false; // chosen on purpose
   }
-  if (typeof highlight === 'boolean') d.highlight = highlight;
+  // A numbered highlight keeps its place in the order.
+  if (typeof highlight === 'boolean') d.highlight = highlight && typeof d.highlight === 'number' ? d.highlight : highlight;
   if (!d.highlight) delete d.highlight;
   writeData(data);
   return list().find((p) => p.id === id);

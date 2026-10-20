@@ -8,15 +8,14 @@ import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import PhotoWall from '../../components/photos/PhotoWall.astro';
 import boy from '../../assets/author-school.png';
-import { getPhotos, getEssays, essayHref, isExternalEssay, type Essay } from '../../lib/photos';
+import { getPhotos, getHighlights, getEssays, essayHref, isExternalEssay, type Essay } from '../../lib/photos';
 
 const photos = getPhotos();
 const essays = (await getEssays()).slice(0, 4);
 
-// Highlights: the photos marked as such, newest first. Until any are marked, the newest few.
-const marked = photos.filter((p) => p.highlight);
-const highlights = (marked.length ? marked : photos).slice(0, 5);
-const rolls = new Set(photos.map((p) => p.roll).filter(Boolean)).size;
+// Highlights: the photos marked as such, in their order. Until any are marked, the newest few.
+const marked = getHighlights(photos);
+const highlights = (marked.length ? marked : photos).slice(0, 6);
 const previews = photos.filter((p) => p.preview).length;
 
 const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
@@ -27,13 +26,12 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
     <div class="ph__head">
       <div class="ph__title">
         <h1>Photographs</h1>
-        <p class="ph__intro">Mostly 35mm film, shot on a Canon EOS 10 and an EOS 300.</p>
       </div>
 
       {highlights.length > 0 && (
         <section class="ph__hl" aria-labelledby="highlights">
-          <h2 class="ph__label" id="highlights"><span>Recent highlights</span>{photos.length > 0 && <a href="#all">all {photos.length} ↓</a>}</h2>
-          <PhotoWall photos={highlights} perRow={1.5} gap={6} label="Recent highlights" />
+          <h2 class="ph__label" id="highlights">Recent highlights</h2>
+          <PhotoWall photos={highlights} perRow={1.33} lead gap={6} label="Recent highlights" />
         </section>
       )}
 
@@ -76,9 +74,8 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
     )}
 
     {photos.length > 0 ? (
-      <section class="ph__all" aria-labelledby="all">
-        <h2 class="ph__label ph__label--rule" id="all">Every frame <span class="ph__count">{photos.length}</span>{rolls > 1 && <span class="ph__aside">{rolls} rolls, newest first</span>}</h2>
-        <PhotoWall class="ph__wall" photos={photos} row={{ vw: 17, min: 110, max: 300 }} label="Every frame" />
+      <section class="ph__all" aria-label="Every photograph">
+        <PhotoWall class="ph__wall" photos={photos} row={{ vw: 17, min: 110, max: 300 }} label="Every photograph" />
       </section>
     ) : (
       <p class="ph__empty">Photographs are on their way.</p>
@@ -88,22 +85,20 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
 
 <style>
   .ph { padding: 40px 0 96px; }
-  .ph__head, .ph__dev, .ph__empty, .ph__all > .ph__label { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+  .ph__head, .ph__dev, .ph__empty { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
 
   /* ---------- the header: phones first ---------- */
   .ph__head {
     display: grid; gap: 28px;
-    grid-template-areas: 'title' 'hl' 'essays' 'boy';
-    /* the rule the boy stands on */
-    background: linear-gradient(var(--ink), var(--ink)) no-repeat bottom / calc(100% - 2 * var(--gutter)) 1px;
+    grid-template-areas: 'title' 'hl' 'essays';
   }
   .ph__title { grid-area: title; }
   .ph__hl { grid-area: hl; min-width: 0; }
   .ph__essays { grid-area: essays; min-width: 0; }
-  .ph__boy { grid-area: boy; }
+  /* phones: a small sticker stuck on the corner of the highlights */
+  .ph__boy { grid-area: hl; align-self: end; justify-self: end; z-index: 1; margin: 0 -4px -22px 0; }
 
   h1 { margin: 0; font-weight: 200; font-size: clamp(56px, 15vw, 84px); line-height: 0.95; letter-spacing: -0.02em; }
-  .ph__intro { margin: 14px 0 0; max-width: 24em; font-size: 19px; line-height: 1.45; font-weight: 300; color: var(--text); }
 
   .ph__label {
     display: flex; justify-content: space-between; align-items: center; gap: 18px; margin: 0 0 12px;
@@ -112,15 +107,16 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
   .ph__label a { letter-spacing: 0.04em; text-transform: none; color: var(--ink); }
   .ph__label a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-  /* the boy: a sticker, standing on the rule */
-  .ph__boy { position: relative; height: 340px; color: var(--ink); }
+  /* the boy: a sticker */
+  .ph__boy { position: relative; width: 44px; height: 116px; color: var(--ink); pointer-events: none; }
   .ph__boy :global(.ph__sticker) {
-    position: absolute; bottom: 0; left: 50%; height: 300px; width: auto; transform: translateX(-50%) rotate(1.5deg); transform-origin: bottom center;
+    position: absolute; bottom: 0; left: 50%; height: 108px; width: auto; transform: translateX(-50%) rotate(4deg); transform-origin: bottom center;
     filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff)
       drop-shadow(0 0 0.6px rgba(30, 34, 64, 0.35)) drop-shadow(0 8px 10px rgba(30, 34, 64, 0.14));
   }
-  .ph__note { position: absolute; top: 8px; left: calc(50% - 150px); margin: 0; font-family: var(--hand); font-weight: 600; font-size: 30px; line-height: 1; white-space: nowrap; transform: rotate(-7deg); transform-origin: left bottom; }
-  .ph__arrow { position: absolute; top: 46px; left: calc(50% - 96px); width: 52px; height: 44px; overflow: visible; }
+  .ph__note, .ph__arrow { display: none; }
+  .ph__note { position: absolute; margin: 0; font-family: var(--hand); font-weight: 600; line-height: 1; white-space: nowrap; transform: rotate(-7deg); transform-origin: left bottom; }
+  .ph__arrow { position: absolute; overflow: visible; }
 
   /* recent essays, like the homepage index */
   .ph__essays ol { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--rule); }
@@ -139,12 +135,15 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
       grid-template-rows: auto 1fr;
       grid-template-areas: 'hl boy title' 'hl boy essays';
       gap: 0 32px;
+      /* the rule the boy stands on */
+      background: linear-gradient(var(--ink), var(--ink)) no-repeat bottom / calc(100% - 2 * var(--gutter)) 1px;
     }
     .ph__hl, .ph__essays { padding-bottom: 36px; }
     .ph__essays { align-self: end; padding-top: 32px; }
     h1 { margin-top: -8px; font-size: clamp(56px, 5.8vw, 84px); }
-    .ph__boy { height: auto; min-height: 460px; }
-    .ph__boy :global(.ph__sticker) { height: min(400px, 100%); }
+    .ph__boy { grid-area: boy; align-self: stretch; justify-self: stretch; width: auto; height: auto; min-height: 460px; margin: 0; z-index: auto; pointer-events: auto; }
+    .ph__boy :global(.ph__sticker) { height: min(400px, 100%); transform: translateX(-50%) rotate(1.5deg); }
+    .ph__note, .ph__arrow { display: block; }
     .ph__note { top: 14px; left: 0; font-size: clamp(26px, 2.4vw, 34px); }
     .ph__arrow { top: 62px; left: 22%; width: 60px; height: 50px; }
   }
@@ -153,10 +152,6 @@ const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : 
   .ph__dev a { text-decoration: underline; }
 
   .ph__all { margin-top: 56px; }
-  .ph__label--rule { justify-content: flex-start; margin-bottom: 22px; }
-  .ph__label--rule::after { content: ''; order: 2; flex: 1; height: 1px; background: var(--rule); }
-  .ph__count { color: var(--ink); }
-  .ph__aside { order: 3; letter-spacing: 0.04em; text-transform: none; }
   .ph__all :global(.ph__wall) { padding-inline: 4px; }
   .ph__empty { margin-top: 40px; font-style: italic; font-size: 19px; color: var(--text); }
 </style>

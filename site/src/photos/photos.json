@@ -42,8 +42,8 @@
     "frame": 7,
     "date": "2026-04-30",
     "source": "20260430_000065310007.jpg",
-    "highlight": true,
-    "alt": "A woman in a blue jacket on a Cornish clifftop"
+    "alt": "A woman in a blue jacket on a Cornish clifftop",
+    "highlight": 3
   },
   "6531-08": {
     "roll": "6531",
@@ -99,7 +99,6 @@
     "frame": 16,
     "date": "2026-04-30",
     "source": "20260430_000065310016.jpg",
-    "highlight": true,
     "alt": "A woman in a pink top and headband by the sea"
   },
   "6531-17": {
@@ -179,8 +178,8 @@
     "frame": 29,
     "date": "2026-04-30",
     "source": "20260430_000065310029.jpg",
-    "highlight": true,
-    "alt": "A man building plywood boxes in a workshop"
+    "alt": "A man building plywood boxes in a workshop",
+    "highlight": 4
   },
   "6531-30": {
     "roll": "6531",
@@ -220,8 +219,8 @@
     "frame": 35,
     "date": "2026-04-30",
     "source": "20260430_000065310035.jpg",
-    "highlight": true,
-    "alt": "A game of table tennis in an office"
+    "alt": "A game of table tennis in an office",
+    "highlight": 5
   },
   "6531-36": {
     "roll": "6531",
@@ -443,8 +442,8 @@
     "frame": 32,
     "date": "2026-04-30",
     "source": "20260430_000065320032.jpg",
-    "highlight": true,
-    "alt": "A magnifying lamp over a green circuit board"
+    "alt": "A magnifying lamp over a green circuit board",
+    "highlight": 2
   },
   "6532-33": {
     "roll": "6532",
@@ -1133,8 +1132,8 @@
     "frame": 31,
     "date": "2026-06-22",
     "source": "000073840031.jpg",
-    "highlight": true,
-    "alt": "A portrait of a woman with her hair tied up"
+    "alt": "A portrait of a woman with her hair tied up",
+    "highlight": 1
   },
   "7384-32": {
     "roll": "7384",
@@ -1267,8 +1266,7 @@
     "frame": 17,
     "date": "2026-06-22",
     "source": "000073850017.jpg",
-    "alt": "A motion-blurred shot of someone playing a racket game",
-    "highlight": true
+    "alt": "A motion-blurred shot of someone playing a racket game"
   },
   "7385-18": {
     "roll": "7385",
@@ -1706,7 +1704,6 @@
     "frame": 14,
     "date": "2026-08-04",
     "source": "000081240014.jpg",
-    "highlight": true,
     "alt": "A man lying on a picnic blanket at the beach with a laptop"
   },
   "8124-15": {
@@ -1720,7 +1717,6 @@
     "frame": 16,
     "date": "2026-08-04",
     "source": "000081240016.jpg",
-    "highlight": true,
     "alt": "A group selfie on a hilltop"
   },
   "8124-17": {
@@ -1758,7 +1754,6 @@
     "frame": 22,
     "date": "2026-08-04",
     "source": "000081240022.jpg",
-    "highlight": true,
     "alt": "A man with a red rucksack in bracken"
   },
   "8124-23": {
@@ -1895,8 +1890,8 @@
     "frame": 5,
     "date": "2026-08-04",
     "source": "000081250005.jpg",
-    "highlight": true,
-    "alt": "A person seen through a server rack"
+    "alt": "A person seen through a server rack",
+    "highlight": 6
   },
   "8125-06": {
     "roll": "8125",

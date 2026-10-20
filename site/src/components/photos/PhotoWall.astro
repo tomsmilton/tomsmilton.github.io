@@ -6,7 +6,8 @@
 // width; rows are about `row.vw` of the screen tall (within `row.min`–`row.max` px) and can run
 // up to about a third taller. With `perRow`, rows are fixed
 // here instead (about that many landscape-widths each), so every row exactly fills the width:
-// better for a few big photos.
+// better for a few big photos. Add `lead` and the first photo runs the full height on the left,
+// the rest in rows beside it, sized so the two sides end level.
 import { Image, getImage } from 'astro:assets';
 import Lightbox from '../Lightbox.astro';
 import { photoLine, type Photo } from '../../lib/photos';
@@ -16,30 +17,44 @@ interface Props {
   row?: { vw: number; min: number; max: number }; // row height, for the CSS layout
   gap?: number;
   perRow?: number; // fix the rows: landscape-widths per row
+  lead?: boolean; // with perRow: the first photo leads, big, on the left
   label: string;
   class?: string;
 }
-const { photos, row = { vw: 17, min: 110, max: 300 }, gap = 4, perRow, label, class: className } = Astro.props;
+const { photos, row = { vw: 17, min: 110, max: 300 }, gap = 4, perRow, lead = false, label, class: className } = Astro.props;
 const full = await Promise.all(photos.map((p) => getImage({ src: p.src, width: Math.min(2000, p.src.width) })));
 const aspect = (p: Photo) => p.src.width / p.src.height;
 const index = new Map(photos.map((p, i) => [p, i]));
 
+const sum = (r: Photo[]) => r.reduce((s, q) => s + aspect(q), 0);
+
 // Fixed rows: fill each to about `perRow` landscape-widths; a short last row joins the one before.
+const first = lead && perRow ? photos[0] : undefined;
 const rows: Photo[][] = [];
 if (perRow) {
   const target = perRow * 1.5;
-  for (const p of photos) {
+  for (const p of first ? photos.slice(1) : photos) {
     const row = rows.at(-1);
-    if (!row || row.reduce((s, q) => s + aspect(q), 0) >= target) rows.push([p]);
+    // Beside a lead, a row takes the next photo only if that brings it closer to the target.
+    const full = row && (first ? Math.abs(sum(row) + aspect(p) - target) >= Math.abs(sum(row) - target) : sum(row) >= target);
+    if (!row || full) rows.push([p]);
     else row.push(p);
   }
-  const sum = (r: Photo[]) => r.reduce((s, q) => s + aspect(q), 0);
-  if (rows.length > 1 && sum(rows.at(-1)!) < target * 0.6) rows.at(-2)!.push(...rows.pop()!);
+  if (!first && rows.length > 1 && sum(rows.at(-1)!) < target * 0.6) rows.at(-2)!.push(...rows.pop()!);
 }
-const share = (p: Photo, row?: Photo[]) => (row ? aspect(p) / row.reduce((s, q) => s + aspect(q), 0) : 0);
+// The lead's share of the width that makes it exactly as tall as the rows beside it.
+const leadGrow = first ? aspect(first) * rows.reduce((s, r) => s + 1 / sum(r), 0) : 0;
+const restShare = first ? 1 / (1 + leadGrow) : 1;
+const share = (p: Photo, row?: Photo[]) => (row ? (aspect(p) / sum(row)) * restShare : 0);
 ---
 {perRow ? (
-  <div class:list={['wall wall--rows', className]} data-lightbox aria-label={label} style={`--gap: ${gap}px`}>
+  <div class:list={['wall wall--rows', { 'wall--lead': first }, className]} data-lightbox aria-label={label} style={`--gap: ${gap}px`}>
+    {first && (
+      <a class="wall__item wall__lead" href={full[0].src} data-caption={photoLine(first)} style={`flex: ${leadGrow.toFixed(4)} 1 0`}>
+        <Image src={first.src} alt={first.alt} widths={[360, 540, 720, 1080, 1440]} sizes={`(min-width: 1440px) ${Math.round(700 * (1 - restShare))}px, ${Math.round(100 * (1 - restShare))}vw`} />
+      </a>
+    )}
+    <div class="wall__rest">
     {rows.map((row) => (
       <div class="wall__row">
         {row.map((p) => {
@@ -52,6 +67,7 @@ const share = (p: Photo, row?: Photo[]) => (row ? aspect(p) / row.reduce((s, q) 
         })}
       </div>
     ))}
+    </div>
   </div>
 ) : (
   <div class:list={['wall', className]} data-lightbox aria-label={label} style={`--row: clamp(${row.min}px, ${row.vw}vw, ${row.max}px); --gap: ${gap}px`}>
@@ -88,4 +104,12 @@ const share = (p: Photo, row?: Photo[]) => (row ? aspect(p) / row.reduce((s, q) 
   .wall--rows::after { content: none; }
   .wall__row { display: flex; gap: var(--gap); }
   .wall--rows .wall__item { flex: var(--a) 1 0; min-width: 0; }
+  .wall__rest { display: grid; gap: var(--gap); }
+  .wall--rows:not(.wall--lead) .wall__rest { display: contents; }
+
+  /* a lead photo: the full height on the left, the rows beside it */
+  .wall--lead { display: flex; align-items: stretch; }
+  .wall--lead .wall__rest { flex: 1 1 0; min-width: 0; align-content: start; }
+  .wall--rows .wall__lead { aspect-ratio: auto; min-width: 0; }
+  .wall__lead :global(img) { position: absolute; inset: 0; }
 </style>
