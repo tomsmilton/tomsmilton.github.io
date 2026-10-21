@@ -10,6 +10,11 @@ export default defineConfig({
   base: '/',
   trailingSlash: 'always',
   build: { format: 'directory' },
+  // Old addresses, kept working.
+  redirects: {
+    '/photographs': '/photography',
+    '/photographs/[essay]': '/photography/[essay]',
+  },
   // The dev server's photo chooser at /__photos/ (dev only).
   integrations: [photoPicker()],
 });

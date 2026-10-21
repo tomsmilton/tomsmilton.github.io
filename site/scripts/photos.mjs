@@ -1,4 +1,4 @@
-// Manages the photographs on /photographs/.
+// Manages the photographs on /photography/.
 //
 //   node scripts/photos.mjs import <folder or files…> [--force]
 //   node scripts/photos.mjs publish <id… | roll:6707>

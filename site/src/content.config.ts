@@ -37,7 +37,7 @@ const notes = defineCollection({
 });
 
 // Photo essays: one Markdown file per essay in src/content/essays/. An essay with a `url` is a
-// link (to Substack, say, or a note); without one it gets its own page at /photographs/<slug>/,
+// link (to Substack, say, or a note); without one it gets its own page at /photography/<slug>/,
 // written like a quick note (a paragraph of only images becomes a gallery).
 const essays = defineCollection({
   loader: glob({ pattern: '*.md', base: 'src/content/essays' }),

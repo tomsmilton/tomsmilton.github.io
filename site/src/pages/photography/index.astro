@@ -1,5 +1,5 @@
 ---
-// Photographs. The header is laid out like the homepage: recent highlights across the left
+// Photography. The header is laid out like the homepage: recent highlights across the left
 // half, the author (a school-photo cut-out, stuck on like a sticker) standing on the header's
 // rule, and the title with the recent essays on the right. Then every published frame as one
 // big wall. Photos come from src/photos/ (scripts/photos.mjs, or /__photos/ on the dev
@@ -21,11 +21,11 @@ const previews = photos.filter((p) => p.preview).length;
 const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 const kind = (e: Essay) => (e.data.url?.includes('substack.com') ? 'Substack' : e.data.url?.startsWith('/notes/') ? 'Quick note' : isExternalEssay(e) ? 'Elsewhere' : 'Essay');
 ---
-<Base title="Photographs" crumbs={[{ label: 'photographs' }]} description="Photographs by Thomas Milton, mostly on 35mm film.">
+<Base title="Photography" crumbs={[{ label: 'photography' }]} description="Photography by Thomas Milton, mostly on 35mm film.">
   <main class="ph">
     <div class="ph__head">
       <div class="ph__title">
-        <h1>Photographs</h1>
+        <h1>Photography</h1>
       </div>
 
       {highlights.length > 0 && (

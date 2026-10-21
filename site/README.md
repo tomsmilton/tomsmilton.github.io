@@ -20,7 +20,7 @@ npm run preview   # serve dist/ locally
 | `src/pages/index.astro` | The homepage (desktop grid, and "Phone A" below 980px) |
 | `src/pages/writing/` | Writing index, and the page for posts shown natively |
 | `src/pages/[section].astro` | Placeholder pages for Work, Objects, About |
-| `src/pages/photographs/` | The Photographs page and photo essays (see Photographs below) |
+| `src/pages/photography/` | The Photography page and photo essays (see Photography below) |
 | `src/components/` | `PhotoCycle` (the slow film-photo crossfade) and `Author` (the boy, the scribble, the arrows) |
 | `src/layouts/Base.astro` | Head, the `tsmilton / …` breadcrumb bar, footer |
 | `src/site.config.ts` | Name, social links, the homepage index |
@@ -73,9 +73,9 @@ The easier way: write the note as a sub-tab under **Drafts** in the *Quick notes
 
 The conversion is `scripts/sync-quick-notes.mjs`, which reads the doc's zipped HTML export (Drive → Download → Web page). Run it by hand with `node scripts/sync-quick-notes.mjs <export.zip>`. Notes it writes carry `source: "google-doc"`; it only ever rewrites those, so hand-written notes are safe. In the doc, a paragraph starting `Tags:`, `Caption:` or `Date:` sets that field instead of appearing in the note.
 
-## Photographs
+## Photography
 
-`/photographs/` shows recent highlights, the photo essays, then every published frame as one big wall.
+`/photography/` (the old `/photographs/` redirects there) shows recent highlights, the photo essays, then every published frame as one big wall.
 Photos open full screen.
 
 - **Add photos:** `node scripts/photos.mjs import ~/Documents/Photos/film` resizes the scans (2400px,

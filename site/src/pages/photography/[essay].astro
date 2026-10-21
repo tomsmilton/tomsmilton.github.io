@@ -19,10 +19,10 @@ const { title, date, dek, cover, coverAlt } = essay.data;
 const { blocks, footnotes } = noteBody(essay);
 const short = title.length > 28 ? title.slice(0, 26).trimEnd() + '…' : title;
 ---
-<Base title={title} crumbs={[{ label: 'photographs', href: '/photographs/' }, { label: short }]} description={dek ?? `A photo essay by Thomas Milton: ${title}.`}>
+<Base title={title} crumbs={[{ label: 'photography', href: '/photography/' }, { label: short }]} description={dek ?? `A photo essay by Thomas Milton: ${title}.`}>
   <main class="essay">
     <header class="essay__head">
-      <p class="essay__kicker mono"><a href="/photographs/">Photographs</a> · {formatDate(date)}</p>
+      <p class="essay__kicker mono"><a href="/photography/">Photography</a> · {formatDate(date)}</p>
       <h1>{title}</h1>
       {dek && <p class="essay__dek">{dek}</p>}
     </header>
@@ -33,7 +33,7 @@ const short = title.length > 28 ? title.slice(0, 26).trimEnd() + '…' : title;
       {blocks.map((block) => <NoteBlock block={block} />)}
       {footnotes && <Fragment set:html={footnotes} />}
     </div>
-    <p class="essay__back mono"><a href="/photographs/">← All photographs</a></p>
+    <p class="essay__back mono"><a href="/photography/">← Photography</a></p>
   </main>
 </Base>
 

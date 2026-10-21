@@ -68,5 +68,5 @@ export async function getEssays(): Promise<Essay[]> {
 }
 
 /** An essay with a `url` links out (or to another page on the site); otherwise it has its own page. */
-export const essayHref = (e: Essay) => e.data.url ?? `/photographs/${e.id}/`;
+export const essayHref = (e: Essay) => e.data.url ?? `/photography/${e.id}/`;
 export const isExternalEssay = (e: Essay) => !!e.data.url && /^https?:/.test(e.data.url);

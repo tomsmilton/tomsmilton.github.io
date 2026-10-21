@@ -5,7 +5,7 @@ import { site } from '../site.config';
 
 export function getStaticPaths() {
   return site.index
-    .filter((item) => !['/writing/', '/notes/', '/photographs/'].includes(item.href))
+    .filter((item) => !['/writing/', '/notes/', '/photography/'].includes(item.href))
     .map((item) => ({ params: { section: item.href.replaceAll('/', '') }, props: { label: item.label } }));
 }
 
