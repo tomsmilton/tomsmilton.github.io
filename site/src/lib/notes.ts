@@ -67,7 +67,23 @@ export function noteBody(note: { id: string; filePath?: string; rendered?: { htm
   const html = (note.rendered?.html ?? '').replace(/user-content-fn/g, `${note.id}-fn`);
   const $ = cheerio.load(html, null, false);
   const footnotes = $('section.footnotes, section[data-footnotes]');
-  const foot = footnotes.length ? $.html(footnotes) : '';
+
+  // A footnote labelled `side…` (`[^side-burst]`) is a sidenote instead: it sits in the
+  // margin beside its line, Tufte-style, or opens under it when its number is tapped.
+  footnotes.find(`li[id^="${note.id}-fn-side"]`).each((_, li) => {
+    const id = $(li).attr('id')!;
+    const ref = $(`a[href="#${id}"]`).first();
+    $(li).find('[data-footnote-backref], .data-footnote-backref').remove();
+    const text = $(li).find('p').map((_, p) => $(p).html()?.trim()).get().join(' ');
+    const n = ref.text().trim();
+    ref.closest('sup').replaceWith(
+      `<label for="${id}" class="sidenote-number" aria-label="Note ${n}">${n}</label>` +
+      `<input type="checkbox" id="${id}" class="sidenote-toggle">` +
+      `<span class="sidenote"><span class="sidenote__n">${n}</span>${text}</span>`,
+    );
+    $(li).remove();
+  });
+  const foot = footnotes.find('li').length ? $.html(footnotes) : '';
   footnotes.remove();
 
   // Images in a note's text render as placeholders holding their src and alt.
