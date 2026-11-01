@@ -19,6 +19,7 @@ npm run preview   # serve dist/ locally
 | --- | --- |
 | `src/pages/index.astro` | The homepage (desktop grid, and "Phone A" below 980px) |
 | `src/pages/writing/` | Writing index, and the page for posts shown natively |
+| `src/pages/widgets/` | The Widgets page: the list (in `site.config.ts`) shown as a terminal `ls`, with a prompt that takes `ls`, `cd <widget>` and `help` |
 | `src/pages/[section].astro` | Placeholder pages for Work, Objects, About |
 | `src/pages/photography/` | The Photography page and photo essays (see Photography below) |
 | `src/components/` | `PhotoCycle` (the slow film-photo crossfade) and `Author` (the boy, the scribble, the arrows) |
