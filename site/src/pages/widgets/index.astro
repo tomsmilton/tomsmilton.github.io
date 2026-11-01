@@ -9,7 +9,25 @@ const lsDate = (iso: string) => {
   return `${months[m - 1]} ${String(d).padStart(2, ' ')}  ${y}`;
 };
 
-const widgets = [...site.widgets].sort((a, b) => b.made.localeCompare(a.made));
+// A widget on another site is a symlink: `ukc-leaderboard -> chromewebstore.google.com/…`.
+const target = (href: string) => {
+  const u = new URL(href);
+  const path = u.pathname.replace(/\/$/, '');
+  return u.host.replace(/^www\./, '') + (path.length <= 20 ? path : '/…');
+};
+const widgets = [...site.widgets]
+  .sort((a, b) => b.made.localeCompare(a.made))
+  .map((w) => {
+    const external = /^https?:/.test(w.href);
+    const dir = w.name.endsWith('/');
+    return {
+      ...w,
+      external,
+      dir,
+      target: external ? target(w.href) : '',
+      mode: external ? 'lrwxrwxrwx' : dir ? 'drwxr-xr-x' : '-rwxr-xr-x',
+    };
+  });
 const ps1 = 'tom@tsmilton';
 ---
 <Base title="Widgets" crumbs={[{ label: 'widgets' }]} description="Small tools Thomas Milton has made, mostly for one job each.">
@@ -31,10 +49,10 @@ const ps1 = 'tom@tsmilton';
             <ol class="ls" data-ls>
               {widgets.map((w) => (
                 <li>
-                  <a href={w.href} data-name={w.name.replace(/\/$/, '')}>
-                    <span class="ls__mode" aria-hidden="true">{w.name.endsWith('/') ? 'drwxr-xr-x' : '-rwxr-xr-x'}</span>
+                  <a href={w.href} data-name={w.name.replace(/\/$/, '')} data-dir={w.dir ? '' : undefined}>
+                    <span class="ls__mode" aria-hidden="true">{w.mode}</span>
                     <time class="ls__date" datetime={w.made}>{lsDate(w.made)}</time>
-                    <span class="ls__name">{w.name}</span>
+                    <span class:list={['ls__name', { 'ls__name--ext': w.external }]}>{w.name}{w.external && <span class="ls__target"><span class="ls__to"><span aria-hidden="true"> -&gt; </span><span class="visually-hidden">, on </span>{w.target}</span><span aria-hidden="true"> ↗︎</span></span>}</span>
                     <span class="ls__about"><span aria-hidden="true"># </span>{w.about}</span>
                   </a>
                 </li>
@@ -65,7 +83,7 @@ const ps1 = 'tom@tsmilton';
   const ls = body.querySelector<HTMLOListElement>('[data-ls]')!;
   const ps1 = form.querySelector('label')!.innerHTML;
 
-  const widgets = [...ls.querySelectorAll<HTMLAnchorElement>('a[data-name]')].map((a) => ({ name: a.dataset.name!, href: a.href }));
+  const widgets = [...ls.querySelectorAll<HTMLAnchorElement>('a[data-name]')].map((a) => ({ name: a.dataset.name!, href: a.href, dir: a.hasAttribute('data-dir') }));
   const find = (arg: string) => {
     const want = arg.replace(/^\.\//, '').replace(/\/$/, '').toLowerCase();
     return widgets.find((w) => w.name.toLowerCase() === want);
@@ -142,7 +160,7 @@ const ps1 = 'tom@tsmilton';
       const hits = widgets.filter((w) => w.name.startsWith(part.replace(/^\.\//, '')));
       if (hits.length === 1) {
         e.preventDefault();
-        input.value = `${before}${hits[0].name}/`;
+        input.value = `${before}${hits[0].name}${hits[0].dir ? '/' : ''}`;
       } else if (hits.length > 1 && part) {
         e.preventDefault();
         line(hits.map((w) => w.name).join('   '), 'dim');
@@ -207,6 +225,8 @@ const ps1 = 'tom@tsmilton';
   .term :global(.ls__mode) { display: none; color: var(--muted); }
   .term :global(.ls__date) { white-space: pre; color: var(--muted); }
   .term :global(.ls__name) { font-weight: 500; color: var(--ink); }
+  .term :global(.ls__target) { font-weight: 400; color: var(--muted); }
+  .term :global(.ls__to) { display: none; }
   .term :global(.ls__about) { grid-column: 2; color: var(--quick); font-size: 13px; line-height: 1.45; }
   .term :global(.ls:hover a) { opacity: 0.35; }
   .term :global(.ls a:hover), .term :global(.ls a:focus-visible) { opacity: 1; }
@@ -246,7 +266,8 @@ const ps1 = 'tom@tsmilton';
     .term__bar { padding: 8px 22px; }
     .term :global(.ls a) { grid-template-columns: auto auto minmax(0, 1fr); }
     .term :global(.ls__mode) { display: block; }
-    .term :global(.ls__name::after) { content: ' →'; opacity: 0; transition: opacity 0.2s; }
+    .term :global(.ls__to) { display: inline; }
+    .term :global(.ls__name:not(.ls__name--ext)::after) { content: ' →'; opacity: 0; transition: opacity 0.2s; }
     .term :global(.ls__about) { grid-column: 3; }
   }
   @media (min-width: 980px) {

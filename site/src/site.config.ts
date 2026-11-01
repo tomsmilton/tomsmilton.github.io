@@ -27,7 +27,8 @@ export const site = {
   ],
 
   // The widgets page (/widgets/) lists these as `ls` output, newest first. `name` is how it appears in the listing
-  // (end it in / for an app, which shows as a directory); `made` is shown as the date.
+  // (end it in / for an app, which shows as a directory); `made` is shown as the date. A widget that lives on another
+  // site shows as a symlink to it (`name -> x.com/…`), with a ↗.
   widgets: [
     {
       name: 'simple-cycling-mapper/',
@@ -40,6 +41,18 @@ export const site = {
       href: '/widgets_dev/bin_day/floras_bins.html',
       about: 'Which bin goes out next? Scraped from the council once a day.',
       made: '2025-03-23',
+    },
+    {
+      name: 'ukc-leaderboard',
+      href: 'https://chromewebstore.google.com/detail/ukc-leaderboard/kgjjgklaoaklkcbacmpmbkbjpgaongbf',
+      about: 'A Chrome extension: a most-logged leaderboard on every UKC route, to compete with friends.',
+      made: '2025-05-11',
+    },
+    {
+      name: 'hollybush-crack-bot',
+      href: 'https://x.com/HollybushCrack',
+      about: 'Posts on X every time someone logs Hollybush Crack on UKC.',
+      made: '2025-03-02',
     },
   ],
 };
