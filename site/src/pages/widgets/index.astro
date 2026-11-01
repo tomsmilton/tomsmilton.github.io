@@ -52,7 +52,7 @@ const ps1 = 'tom@tsmilton';
                   <a href={w.href} data-name={w.name.replace(/\/$/, '')} data-dir={w.dir ? '' : undefined}>
                     <span class="ls__mode" aria-hidden="true">{w.mode}</span>
                     <time class="ls__date" datetime={w.made}>{lsDate(w.made)}</time>
-                    <span class:list={['ls__name', { 'ls__name--ext': w.external }]}>{w.name}{w.external && <span class="ls__target"><span class="ls__to"><span aria-hidden="true"> -&gt; </span><span class="visually-hidden">, on </span>{w.target}</span><span aria-hidden="true"> ↗︎</span></span>}</span>
+                    <span class:list={['ls__name', { 'ls__name--ext': w.external }]}>{w.name}{w.external && <span class="ls__target"><span class="ls__to"><span aria-hidden="true"> -&gt; </span><span class="visually-hidden">, on </span><span class="ls__host">{w.target}<span aria-hidden="true">&nbsp;↗︎</span></span></span><span class="ls__ext" aria-hidden="true"> ↗︎</span></span>}</span>
                     <span class="ls__about"><span aria-hidden="true"># </span>{w.about}</span>
                   </a>
                 </li>
@@ -227,6 +227,8 @@ const ps1 = 'tom@tsmilton';
   .term :global(.ls__name) { font-weight: 500; color: var(--ink); }
   .term :global(.ls__target) { font-weight: 400; color: var(--muted); }
   .term :global(.ls__to) { display: none; }
+  /* the address and its ↗ wrap as one, and are trimmed rather than broken if the column is too narrow */
+  .term :global(.ls__host) { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
   .term :global(.ls__about) { grid-column: 2; color: var(--quick); font-size: 13px; line-height: 1.45; }
   .term :global(.ls:hover a) { opacity: 0.35; }
   .term :global(.ls a:hover), .term :global(.ls a:focus-visible) { opacity: 1; }
@@ -267,6 +269,7 @@ const ps1 = 'tom@tsmilton';
     .term :global(.ls a) { grid-template-columns: auto auto minmax(0, 1fr); }
     .term :global(.ls__mode) { display: block; }
     .term :global(.ls__to) { display: inline; }
+    .term :global(.ls__ext) { display: none; }
     .term :global(.ls__name:not(.ls__name--ext)::after) { content: ' →'; opacity: 0; transition: opacity 0.2s; }
     .term :global(.ls__about) { grid-column: 3; }
   }
