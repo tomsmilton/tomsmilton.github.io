@@ -1,7 +1,7 @@
 ---
 // A note's photo, sized by its shape rather than stretched to the column:
 // landscape photos sit at about three-quarters of the column; portrait ones
-// are capped in height with the caption beside them (under them on phones).
+// are capped in height with the caption under them.
 // A cutout (an object on a transparent background) sits smaller, centred in the column.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -32,10 +32,11 @@ const portrait = !cutout && src.height > src.width * 1.1;
   .fig--cutout :global(img) { width: min(75%, 340px); margin: 0 auto; }
   .fig--cutout figcaption { max-width: 340px; margin-inline: auto; }
 
+  /* The caption sits under the photo and wraps to the photo's width. */
+  .fig--portrait { display: table; }
   .fig--portrait :global(img) { width: auto; max-width: 100%; max-height: 340px; }
+  .fig--portrait figcaption { display: table-caption; caption-side: bottom; }
   @media (min-width: 560px) {
-    .fig--portrait { display: flex; align-items: flex-end; gap: 22px; }
-    .fig--portrait :global(img) { max-height: 380px; flex-shrink: 0; }
-    .fig--portrait figcaption { flex: 1; max-width: 220px; margin: 0 0 -4px; }
+    .fig--portrait :global(img) { max-height: 380px; }
   }
 </style>
