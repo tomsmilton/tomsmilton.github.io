@@ -2,11 +2,14 @@
 // A single quick note on its own page.
 import Base from '../../layouts/Base.astro';
 import NoteEntry from '../../components/notes/NoteEntry.astro';
-import { getNotes, noteHref, tagHref, type Note } from '../../lib/notes';
+import { getAllNotes, getNotes, noteHref, tagHref, type Note } from '../../lib/notes';
 
 export async function getStaticPaths() {
   const notes = await getNotes();
-  return notes.map((note, i) => ({ params: { slug: note.id }, props: { note, newer: notes[i - 1], older: notes[i + 1] } }));
+  const listed = notes.map((note, i) => ({ params: { slug: note.id }, props: { note, newer: notes[i - 1], older: notes[i + 1] } }));
+  // Unlisted notes get a page, but no neighbours: nothing links in or out of the feed.
+  const unlisted = (await getAllNotes()).filter((n) => n.data.unlisted).map((note) => ({ params: { slug: note.id }, props: { note } }));
+  return [...listed, ...unlisted];
 }
 
 interface Props { note: Note; newer?: Note; older?: Note }
@@ -16,16 +19,19 @@ const short = title.length > 28 ? title.slice(0, 26).trimEnd() + '…' : title;
 const label = (n: Note) => n.data.title ?? 'A note';
 ---
 <Base title={title} crumbs={[{ label: 'notes', href: '/notes/' }, { label: short }]} description={`A quick note by Thomas Milton: ${title}.`}>
+  {note.data.unlisted && <meta slot="head" name="robots" content="noindex" />}
   <main class="one">
     <p class="kicker mono"><a href="/notes/">Quick notes</a></p>
     <NoteEntry note={note} full />
     {note.data.tags.length > 0 && (
       <p class="tags mono">Filed under {note.data.tags.map((t, i) => <>{i > 0 && ', '}<a href={tagHref(t)}>{t}</a></>)}</p>
     )}
-    <nav class="pager mono" aria-label="More notes">
-      {older ? <a href={noteHref(older)}>← {label(older)}</a> : <span />}
-      {newer ? <a class="pager__next" href={noteHref(newer)}>{label(newer)} →</a> : <span />}
-    </nav>
+    {!note.data.unlisted && (
+      <nav class="pager mono" aria-label="More notes">
+        {older ? <a href={noteHref(older)}>← {label(older)}</a> : <span />}
+        {newer ? <a class="pager__next" href={noteHref(newer)}>{label(newer)} →</a> : <span />}
+      </nav>
+    )}
     <p class="back mono"><a href="/notes/">All quick notes</a> · <a href="/writing/">Longer pieces → Writing</a></p>
   </main>
 </Base>

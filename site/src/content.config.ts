@@ -33,6 +33,9 @@ const notes = defineCollection({
     imageStyle: z.enum(['photo', 'cutout']).default('photo'),
     // "google-doc" for notes published from the Quick notes doc by scripts/sync-quick-notes.mjs.
     source: z.string().optional(),
+    // Unlisted notes get their own page but stay out of the feed, topics, the home page and
+    // search engines: only people with the link find them.
+    unlisted: z.boolean().default(false),
   }),
 });
 

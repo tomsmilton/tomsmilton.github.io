@@ -5,8 +5,13 @@ import { posix } from 'node:path';
 
 export type Note = CollectionEntry<'notes'>;
 
-/** All quick notes, newest first; notes from the same day keep their `order`. */
+/** The listed quick notes, newest first; notes from the same day keep their `order`. */
 export async function getNotes(): Promise<Note[]> {
+  return (await getAllNotes()).filter((n) => !n.data.unlisted);
+}
+
+/** Every quick note, unlisted ones included (they still need their own pages). */
+export async function getAllNotes(): Promise<Note[]> {
   const notes = await getCollection('notes');
   return notes.sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || a.data.order - b.data.order);
 }
@@ -50,7 +55,9 @@ export type Block =
   // An italic line at its end (`*…*`) is the caption.
   | { images: NoteImage[]; caption?: string }
   // A table whose first header cell is an image: a card for a thing, with its facts.
-  | { card: { image: NoteImage; title: string; facts: [string, string][] } };
+  | { card: { image: NoteImage; title: string; facts: [string, string][] } }
+  // A table whose last column is nothing but images: steps, each some text and its result.
+  | { steps: { labels: [string, string]; rows: { html: string; image: NoteImage }[] } };
 
 export interface Body {
   blocks: Block[]; // top-level blocks of the note
@@ -112,6 +119,19 @@ export function noteBody(note: { id: string; filePath?: string; rendered?: { htm
           return [$(k).text().trim().replace(/:$/, ''), $(v).html()?.trim() ?? ''] as [string, string];
         });
         return { card: { image, title, facts } };
+      }
+    }
+    if (node.is('table')) {
+      const rows = node.find('tbody tr').toArray().map((tr) => {
+        const cells = $(tr).children('td');
+        const last = cells.last();
+        const img = last.find('img');
+        const image = cells.length === 2 && img.length === 1 && !last.text().trim() ? imageOf(img) : undefined;
+        return image && { html: cells.first().html()?.trim() ?? '', image };
+      });
+      if (rows.length && rows.every((r) => !!r)) {
+        const [a, b] = node.find('thead th').toArray().map((th) => $(th).text().trim());
+        return { steps: { labels: [a ?? '', b ?? ''] as [string, string], rows: rows as { html: string; image: NoteImage }[] } };
       }
     }
     return { html: $.html(el) };

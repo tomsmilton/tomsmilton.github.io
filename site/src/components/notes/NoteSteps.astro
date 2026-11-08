@@ -1,0 +1,55 @@
+---
+// Steps: a run of text-and-result pairs (prompts and what came back, say), numbered down the
+// page with each result as a thumbnail beside its text. Written in a note as a table whose
+// last column holds nothing but images. The thumbnails open in the photo viewer.
+import { Image, getImage } from 'astro:assets';
+import Lightbox from '../Lightbox.astro';
+import type { NoteImage } from '../../lib/notes';
+
+interface Props { labels: [string, string]; rows: { html: string; image: NoteImage }[] }
+const { labels, rows } = Astro.props;
+const full = await Promise.all(rows.map((r) => getImage({ src: r.image.src, width: Math.min(2000, r.image.src.width) })));
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+<figure class="steps" data-lightbox>
+  {(labels[0] || labels[1]) && (
+    <div class="steps__head" aria-hidden="true"><span>{labels[0]}</span><span>{labels[1]}</span></div>
+  )}
+  <ol class="steps__list">
+    {rows.map((r, i) => (
+      <li class="step">
+        <span class="step__n">{pad(i + 1)}</span>
+        <p class="step__text" set:html={r.html} />
+        <a class="step__img" href={full[i].src} data-caption={`${pad(i + 1)} · ${r.image.alt}`}>
+          <Image src={r.image.src} alt={r.image.alt} widths={[160, 240, 320, 480]} sizes="(min-width: 560px) 168px, 112px" />
+        </a>
+      </li>
+    ))}
+  </ol>
+</figure>
+<Lightbox />
+
+<style>
+  .steps { margin: 26px 0 32px; border-top: 1px solid var(--rule-strong); }
+  .steps__head {
+    display: flex; justify-content: space-between; padding: 8px 0;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(27, 47, 158, 0.62);
+  }
+  .steps__list { margin: 0; padding: 0; list-style: none; }
+  .step {
+    display: grid; grid-template-columns: 34px minmax(0, 1fr) 168px; gap: 0 18px; align-items: start;
+    padding: 18px 0; border-top: 1px solid var(--rule);
+  }
+  .step__n { padding-top: 4px; font-family: var(--mono); font-size: 12px; color: var(--ink); }
+  .step__text { margin: 0 !important; font-style: italic; font-weight: 300; font-size: 17px; line-height: 1.5; color: var(--text); }
+  .step__text::before { content: '“'; }
+  .step__text::after { content: '”'; }
+  .step__img { display: block; background: var(--frame); cursor: zoom-in; box-shadow: 0 1px 6px rgba(30, 34, 64, 0.12) !important; }
+  .step__img :global(img) { display: block; width: 100%; height: auto; transition: opacity 0.2s; }
+  .step__img:hover :global(img) { opacity: 0.88; }
+
+  @media (max-width: 559px) {
+    .step { grid-template-columns: 26px minmax(0, 1fr) 112px; gap: 0 12px; padding: 14px 0; }
+    .step__text { font-size: 15.5px; }
+  }
+</style>
