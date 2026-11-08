@@ -24,7 +24,7 @@ I’m really excited for Si to be using this and I really enjoyed shipping a pie
 
 But the AI makes cool tools era, is a transient era. Update all the way. As the AIs get smarter, and the UX the companies provide improves, you need not make the tool. Just ask the model.
 
-This weekend, rather than ask Claude to make me a tool, I chose to ask it to make me a poster. I worry that people are too obsessed with using AIs to make new tools, when in fact the AIs will just make the end *thing*/solve the problem for the user. It won’t be **human asks AI to make tool, human uses tool**. But just **human asks AI to solve problem**.
+This weekend, rather than ask Claude to make me a tool, I chose to ask it to make me a poster. I worry that people are too obsessed with using AIs to make new tools, when in fact the AIs will just make the end *thing*/solve the problem for the user.
 
 ![A green and white contour poster of Bushy Park, Teddington](./images/update-all-the-way-4.jpg)
 ![An orange and white contour poster of Stanage Edge, Derbyshire](./images/update-all-the-way-5.png)
