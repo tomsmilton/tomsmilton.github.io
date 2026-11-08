@@ -5,6 +5,8 @@ order: 0
 tags: []
 unlisted: true
 ---
+<aside class="callout"><p>Sorry, this is one of my worst written blog posts. I wanted to get it out, but probably should have edited it.</p></aside>
+
 The AIs are so good at making tools for me. A page where the Amodo team can upload PCB photos and they're auto edited, a web app that tells me where to put different items in our stock system, or a page that tells me which coloured bin is next.
 
 Last weekend I made a contour poster making tool. Inspired by Park Design, a Peak District artist, I made a tool that lets you create a contour map of any location you like. After a few prompts I had a fully deployed app for generating and selling these posters (Stripe checkout included).
